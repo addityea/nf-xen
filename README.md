@@ -115,7 +115,7 @@ Description of the columns:
 
 In order to help users create sample sheets, a simple web application is provided in the `gensheet` directory. This application allows users to upload `.h5ad` files and generate a sample sheet with the required parameters.
 
-If you have Pixi installed, you can run the gensheet application using the following command:
+**Recommended**: If you have [Pixi](https://pixi.run/) installed, you can use the `gensheet` application to create sample sheets easily.
 
 ```bash
 cd gensheet
@@ -127,15 +127,17 @@ This will start a local web server where you can access the application in your 
 
 Or, you may simply run the Docker container:
 
+When using Docker, you need to mount the directory where you have the `h5ad` files as the exact path so that the application may return actual paths or it'll return paths relative to Docker, which won't work outside of the container. For example, if your `h5ad` files are in `/path/to/h5ad_files`, you can run the following command: 
+
 ```bash
-docker run --rm -p 8501:8501 saditya88/nf-xen:gensheet
+docker run --rm -v '/path/to/h5ad_files/':'/path/to/h5ad_files' -p 8501:8501 saditya88/nf-xen:gensheet
 ```
 
 Finally, if you prefer to use the `gensheet` application without Pixi, using system Python, you can run the following command:
 
 ```bash
 cd gensheet
-python3 -m pip install streamlit-aggrid streamlit pandas
+python3 -m pip install streamlit-aggrid streamlit pandas # Or use a virtual environment like venv or conda, whichever you prefer/ have
 streamlit run app.py --server.maxUploadSize 200000
 ```
 
