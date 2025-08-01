@@ -107,9 +107,39 @@ Description of the columns:
 - **`min_cells_per_gene`**: Minimum number of cells expressing a gene. [Required, if set to -1, filtering is not applied]
 - **`qc`**: Whether to perform quality control (`YES` or `NO`).
 - **`clust`**: Whether to perform clustering (`YES` or `NO`).
-- **`clust_res`**: Clustering resolution to use (e.g., `0.5`, `0.6`, etc.).
+- **`clust_res`**: Clustering resolution to use (e.g., `0.5`, `0.6`, etc.). If set to NA, it will use a range of resolutions defined in the `nextflow.config` file, or via the `--clust_res` parameter where one may specify a comma-separated list of resolutions in quotes. For example, `"0.1,0.2,0.3,0.5,0.5"`
 - **`celldex_ref`**: Cell type reference for annotation (e.g., `hpca__2024-02-26`, `monaco_immune__2024-02-26`).
 - **`celldex_labs`**: Cell type labels to use for annotation (e.g., `label.main`, `label.fine`).
+
+## Gensheet: Create Sample Sheets with ease
+
+In order to help users create sample sheets, a simple web application is provided in the `gensheet` directory. This application allows users to upload `.h5ad` files and generate a sample sheet with the required parameters.
+
+If you have Pixi installed, you can run the gensheet application using the following command:
+
+```bash
+cd gensheet
+pixi install
+pixi run streamlit run app.py --server.maxUploadSize 200000
+```
+
+This will start a local web server where you can access the application in your browser. The application provides a user-friendly interface to input sample information and generate the sample sheet in CSV format.
+
+Or, you may simply run the Docker container:
+
+```bash
+docker run --rm -p 8501:8501 saditya88/nf-xen:gensheet
+```
+
+Finally, if you prefer to use the `gensheet` application without Pixi, using system Python, you can run the following command:
+
+```bash
+cd gensheet
+python3 -m pip install streamlit-aggrid streamlit pandas
+streamlit run app.py --server.maxUploadSize 200000
+```
+
+Then, open your browser and navigate to `http://localhost:8501` to access the gensheet application.
 
 ## Output
 
