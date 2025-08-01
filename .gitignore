@@ -1,0 +1,7 @@
+work/
+results/
+.nextflow.*
+.nextflow/
+tests/
+# macOS
+.DS_Store
