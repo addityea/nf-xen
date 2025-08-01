@@ -107,7 +107,7 @@ Description of the columns:
 - **`min_cells_per_gene`**: Minimum number of cells expressing a gene. [Required, if set to -1, filtering is not applied]
 - **`qc`**: Whether to perform quality control (`YES` or `NO`).
 - **`clust`**: Whether to perform clustering (`YES` or `NO`).
-- **`clust_res`**: Clustering resolution to use (e.g., `0.5`, `0.6`, etc.). If set to NA, it will use a range of resolutions defined in the `nextflow.config` file, or via the `--clust_res` parameter where one may specify a comma-separated list of resolutions in quotes. For example, `"0.1,0.2,0.3,0.5,0.5"`
+- **`clust_res`**: Clustering resolution to use (e.g., `0.5`, `0.6`, etc.). If set to NA, it will use a range of resolutions defined in the `nextflow.config` file, or via the `--clust_res` parameter where one may specify a comma-separated list of resolutions in quotes. For example, `"0.1,0.2,0.3,0.5,0.6"`
 - **`celldex_ref`**: Cell type reference for annotation (e.g., `hpca__2024-02-26`, `monaco_immune__2024-02-26`).
 - **`celldex_labs`**: Cell type labels to use for annotation (e.g., `label.main`, `label.fine`).
 
