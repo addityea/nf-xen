@@ -74,7 +74,17 @@ if uploaded_files:
     st.write("The longest common suffix has been removed from the sample names to make them more readable.")
     st.write("Don't forget to scroll horizontally to see all columns as they may not be visible.")
     st.write("Github: [nf-xen](https://github.com/addityea/nf-xen): Aditya Singh")
+    # Bulk Edit Section
+    st.write("### Bulk Edit Column Values")
+    st.write("You can bulk edit a column by selecting it and entering a new value. This will update all rows in that column.")
+    with st.form(key='bulk_edit_form', clear_on_submit=False):
+        col_to_edit = st.selectbox("Select Column to Edit", df.columns)
+        new_value = st.text_input("Enter New Value for All Rows", "")
+        submit_button = st.form_submit_button(label='Apply to Column')
 
+        if submit_button and col_to_edit and new_value != "":
+            df[col_to_edit] = new_value
+            st.success(f"Updated all values in '{col_to_edit}' column to '{new_value}'")
     # Configure AgGrid
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_default_column(editable=True, resizable=True, cellStyle={'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap', 'overflow': 'hidden'})
@@ -117,17 +127,6 @@ if uploaded_files:
     edited_df = grid_response['data']
 
     csv = edited_df.to_csv(index=False).encode('utf-8')
-        # Bulk Edit Section
-    st.write("### Bulk Edit Column Values")
-    st.write("You can bulk edit a column by selecting it and entering a new value. This will update all rows in that column.")
-    with st.form(key='bulk_edit_form', clear_on_submit=False):
-        col_to_edit = st.selectbox("Select Column to Edit", df.columns)
-        new_value = st.text_input("Enter New Value for All Rows", "")
-        submit_button = st.form_submit_button(label='Apply to Column')
-
-        if submit_button and col_to_edit and new_value != "":
-            df[col_to_edit] = new_value
-            st.success(f"Updated all values in '{col_to_edit}' column to '{new_value}'")
     st.download_button(
         label="📥 Download Sample Sheet CSV",
         data=csv,
