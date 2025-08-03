@@ -5,8 +5,9 @@ from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 # Enable wide layout
 st.set_page_config(
-    page_title="Sample Sheet Generator for nf-xen",
+    page_title="nf-xen: GenSheet",
     layout="wide",
+    page_icon="fa-solid fa-file-csv"
 )
 
 # Default values
@@ -133,5 +134,42 @@ if uploaded_files:
         file_name='sample_sheet.csv',
         mime='text/csv'
     )
+    # Additional Streamlit UI for workflow parameters
+    st.sidebar.header("Workflow Parameters")
+
+    # Profile Selection
+    available_profiles = ["local", "docker", "arm", "apptainer", "conda", "uppmax", "test_full"]
+    selected_profiles = st.sidebar.multiselect("Select Profiles", available_profiles, default=["docker"])
+
+    # Optional Params Inputs
+    cpus = st.sidebar.number_input("CPUs", min_value=1, value=14)
+    memory = st.sidebar.text_input("Memory (e.g., 20.GB)", value="20.GB")
+    retry = st.sidebar.number_input("Max Retries", min_value=0, value=3)
+    time_param = st.sidebar.text_input("Max Time (e.g., 10-00:00:00)", value="10-00:00:00")
+    account = st.sidebar.text_input("Account (Only for UPPMAX)", value="")
+
+    # Clustering Method Dropdown (Louvain or Leiden)
+    clust_method = st.sidebar.selectbox("Clustering Method", ["louvain", "leiden"], index=0)
+    clust_res = st.sidebar.text_input("Clustering Resolution(s)", value="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5")
+
+    # Output Directory
+    outdir = st.sidebar.text_input("Output Directory", value="results")
+
+    # Generate the --profile parameter (comma-separated)
+    profile_param = ",".join(selected_profiles)
+
+    # Sample Sheet Path
+    sample_sheet_path = 'sample_sheet.csv'
+
+    # Nextflow Command Preview
+    st.write("### Generated Nextflow Run Command")
+    st.write("Make sure to run this command from within the `nf-xen` directory.")
+    st.write("Update the `--sampleSheet` parameter if it's not in the nf-xen directory.")
+    nextflow_cmd = f"nextflow run nf-xen -profile {profile_param} --sampleSheet {sample_sheet_path} --outdir {outdir} --cpus {cpus} --memory {memory} --retry {retry} --time {time_param} --clust_method {clust_method} --clust_res \"{clust_res}\""
+    if account:
+        nextflow_cmd += f" --account {account}"
+
+    st.code(nextflow_cmd, language='bash')
+
 else:
     st.info("Upload one or more .h5ad files to start.")
