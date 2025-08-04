@@ -74,17 +74,6 @@ if uploaded_files:
     st.write("The longest common suffix has been removed from the sample names to make them more readable.")
     st.write("Don't forget to scroll horizontally to see all columns as they may not be visible.")
     st.write("Github: [nf-xen](https://github.com/addityea/nf-xen): Aditya Singh")
-    # Bulk Edit Section
-    st.write("### Bulk Edit Column Values")
-    st.write("You can bulk edit a column by selecting it and entering a new value. This will update all rows in that column.")
-    with st.form(key='bulk_edit_form', clear_on_submit=False):
-        col_to_edit = st.selectbox("Select Column to Edit", df.columns)
-        new_value = st.text_input("Enter New Value for All Rows", "")
-        submit_button = st.form_submit_button(label='Apply to Column')
-
-        if submit_button and col_to_edit and new_value != "":
-            df[col_to_edit] = new_value
-            st.success(f"Updated all values in '{col_to_edit}' column to '{new_value}'")
     # Configure AgGrid
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_default_column(editable=True, resizable=True, cellStyle={'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap', 'overflow': 'hidden'})
@@ -141,10 +130,16 @@ if uploaded_files:
     selected_profiles = st.sidebar.multiselect("Select Profiles", available_profiles, default=["docker"])
 
     # Optional Params Inputs
-    cpus = st.sidebar.number_input("CPUs", min_value=1, value=14)
+    cpus = st.sidebar.number_input("CPUs", min_value=1, value=14, max_value = os.cpu_count())
     memory = st.sidebar.text_input("Memory (e.g., 20.GB)", value="20.GB")
     retry = st.sidebar.number_input("Max Retries", min_value=0, value=3)
-    time_param = st.sidebar.text_input("Max Time (e.g., 10-00:00:00)", value="10-00:00:00")
+    st.sidebar.write("Max Time")
+    col1, col2, col3, col4 = st.sidebar.columns(4)
+    days = col1.number_input("Days", min_value=0, value=10)
+    hours = col2.number_input("Hours", min_value=0, max_value=24, value=0)
+    mins = col3.number_input("Minutes", min_value=0, max_value=60, value=0)
+    secs = col4.number_input("Seconds", min_value=0, max_value=60, value=0)
+    time_param = f"{days}-{hours:02d}:{mins:02d}:{secs:02d}"
     account = st.sidebar.text_input("Account (Only for UPPMAX)", value="")
 
     # Clustering Method Dropdown (Louvain or Leiden)
