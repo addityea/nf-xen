@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 import streamlit as st
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 # Enable wide layout
 st.set_page_config(
@@ -75,46 +74,10 @@ if uploaded_files:
     st.write("The longest common suffix has been removed from the sample names to make them more readable.")
     st.write("Don't forget to scroll horizontally to see all columns as they may not be visible.")
     st.write("Github: [nf-xen](https://github.com/addityea/nf-xen): Aditya Singh")
-    # Configure AgGrid
-    gb = GridOptionsBuilder.from_dataframe(df)
-    gb.configure_default_column(editable=True, resizable=True, cellStyle={'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap', 'overflow': 'hidden'})
-
-    # Dropdowns for qc and clust
-    gb.configure_column(
-        "qc", 
-        cellEditor='agSelectCellEditor', 
-        cellEditorParams={'values': ["YES", "NO"]},
-        editable=True
-    )
-
-    gb.configure_column(
-        "clust", 
-        cellEditor='agSelectCellEditor', 
-        cellEditorParams={'values': ["YES", "NO"]},
-        editable=True
-    )
-
-    # Limit width for certain columns (like h5ad) to trigger ellipsis
-    gb.configure_column("h5ad", width=400)  # Adjust width as needed
-
-    # Grid options
-    gb.configure_grid_options(domLayout='normal')  # No autoHeight to keep single-line rows
-    gb.configure_side_bar()
-
-    grid_options = gb.build()
-
-    grid_response = AgGrid(
-        df,
-        gridOptions=grid_options,
-        editable=True,
-        fit_columns_on_grid_load=False,  # Let user scroll horizontally
-        theme='balham',
-        update_mode=GridUpdateMode.MODEL_CHANGED,
-        height=600,
-        width='100%'
-    )
-
-    edited_df = grid_response['data']
+    st.write("#### Editor")
+    st.write("Functions similar to a spreadsheet editor such as Excel or Google Sheets.")
+    st.write("For bulk editing, edit one cell and drag the fill handle (small square at the bottom-right corner of the cell) to fill other cells with the same value.")
+    edited_df = st.data_editor(df)
 
     csv = edited_df.to_csv(index=False).encode('utf-8')
     st.download_button(
