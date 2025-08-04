@@ -52,7 +52,6 @@ if uploaded_files:
 
     df = pd.DataFrame(data)
     # Remove longest common suffix from sample names
-    # Remove longest common suffix from sample names
     def longest_common_suffix(strs):
         if not strs:
             return ""
