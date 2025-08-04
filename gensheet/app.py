@@ -51,9 +51,9 @@ if uploaded_files:
         data.append(entry)
 
     df = pd.DataFrame(data)
-    # Remove longest common suffix from sample names
+    # Remove longest common suffix from sample names (only if >1 sample)
     def longest_common_suffix(strs):
-        if not strs:
+        if not strs or len(strs) < 2:
             return ""
         rev_strs = [s[::-1] for s in strs]
         shortest = min(rev_strs, key=len)
@@ -63,9 +63,10 @@ if uploaded_files:
                     return shortest[:i][::-1]
         return shortest[::-1]
 
-    suffix = longest_common_suffix(df['sampleName'].tolist())
-    if suffix:
-        df['sampleName'] = df['sampleName'].str[:-len(suffix)]
+    if len(df['sampleName']) > 1:
+        suffix = longest_common_suffix(df['sampleName'].tolist())
+        if suffix:
+            df['sampleName'] = df['sampleName'].str[:-len(suffix)]
 
     st.write("### Edit Sample Sheet Below:")
     st.write("You can edit the values below. The columns `qc` and `clust` are dropdowns with options `YES` and `NO`")
