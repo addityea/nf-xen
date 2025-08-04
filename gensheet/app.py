@@ -164,7 +164,7 @@ if uploaded_files:
     st.write("### Generated Nextflow Run Command")
     st.write("Make sure to run this command from within the `nf-xen` directory.")
     st.write("Update the `--sampleSheet` parameter if it's not in the nf-xen directory.")
-    nextflow_cmd = f"nextflow run nf-xen -profile {profile_param} --sampleSheet {sample_sheet_path} --outdir {outdir} --cpus {cpus} --memory {memory} --retry {retry} --time {time_param} --clust_method {clust_method} --clust_res \"{clust_res}\""
+    nextflow_cmd = f"nextflow run main.nf -profile {profile_param} --sampleSheet {sample_sheet_path} --outdir {outdir} --cpus {cpus} --memory {memory} --retry {retry} --time {time_param} --clust_method {clust_method} --clust_res \"{clust_res}\""
     if account:
         nextflow_cmd += f" --account {account}"
 
