@@ -77,7 +77,10 @@ if uploaded_files:
     st.write("#### Editor")
     st.write("Functions similar to a spreadsheet editor such as Excel or Google Sheets.")
     st.write("For bulk editing, edit one cell and drag the fill handle (small square at the bottom-right corner of the cell) to fill other cells with the same value.")
-    edited_df = st.data_editor(df)
+    edited_df = st.data_editor(df, column_config ={
+        "qc" : st.column_config.SelectboxColumn("QC", options=["YES", "NO"], default="YES", required=True),
+        "clust" : st.column_config.SelectboxColumn("Clust", options=["YES", "NO"], default="YES", required=True)
+    })
 
     csv = edited_df.to_csv(index=False).encode('utf-8')
     st.download_button(
@@ -94,8 +97,12 @@ if uploaded_files:
     selected_profiles = st.sidebar.multiselect("Select Profiles", available_profiles, default=["docker"])
 
     # Optional Params Inputs
-    cpus = st.sidebar.number_input("CPUs", min_value=1, value=14, max_value = os.cpu_count())
-    memory = st.sidebar.text_input("Memory (e.g., 20.GB)", value="20.GB")
+    cpus = st.sidebar.number_input("CPUs", min_value=1, value=(os.cpu_count() -1), max_value = os.cpu_count())
+    mcol1, mcol2 = st.sidebar.columns(2)
+    mem = mcol1.number_input("Memory", min_value=1, value=20, max_value=1000)
+    mem_unit = mcol2.selectbox("Memory Unit", ["GB", "MB", "TB"], index=0)
+    memory = f"{mem}.{mem_unit}" if mem_unit != "GB" else f"{mem}.GB"
+    #memory = st.sidebar.text_input("Memory (e.g., 20.GB)", value="20.GB")
     retry = st.sidebar.number_input("Max Retries", min_value=0, value=3)
     st.sidebar.write("Max Time")
     col1, col2, col3, col4 = st.sidebar.columns(4)
