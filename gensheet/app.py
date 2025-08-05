@@ -90,6 +90,7 @@ if uploaded_files:
         mime='text/csv'
     )
     # Additional Streamlit UI for workflow parameters
+    st.sidebar.image("../assets/nfxen.png", width=200)
     st.sidebar.header("Workflow Parameters")
 
     # Profile Selection

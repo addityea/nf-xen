@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="assets/nfxen.png" alt="nf-xen logo" width="400"/>
+</p>
+
 # nf-xen
 
 | ![Workflow](https://img.shields.io/badge/Workflow-Nextflow-blue) | ![Version](https://img.shields.io/badge/Version-0.0.1-teal) | ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen) |
@@ -120,7 +124,7 @@ In order to help users create sample sheets, a simple web application is provide
 ```bash
 cd gensheet
 pixi install
-pixi run streamlit run app.py --server.maxUploadSize 200000
+pixi run streamlit run app.py
 ```
 
 This will start a local web server where you can access the application in your browser. The application provides a user-friendly interface to input sample information and generate the sample sheet in CSV format.
@@ -138,7 +142,7 @@ Finally, if you prefer to use the `gensheet` application without Pixi, using sys
 ```bash
 cd gensheet
 python3 -m pip install streamlit-aggrid streamlit pandas # Or use a virtual environment like venv or conda, whichever you prefer/ have
-streamlit run app.py --server.maxUploadSize 200000
+streamlit run app.py
 ```
 
 Then, open your browser and navigate to `http://localhost:8501` to access the gensheet application.

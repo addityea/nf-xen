@@ -1,0 +1,9 @@
+[server]
+
+showEmailPrompt = false
+maxUploadSize = 20000
+
+[theme]
+
+base = "light"
+
