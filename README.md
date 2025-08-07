@@ -9,7 +9,7 @@
 
 ### DAG
 
-```{mermaid}
+```mermaid
 %%{
   init: {
     'theme': 'neutral'
