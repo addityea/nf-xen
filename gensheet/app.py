@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import streamlit as st
+from datetime import datetime
 
 # Enable wide layout
 st.set_page_config(
@@ -87,10 +88,11 @@ if uploaded_files:
     )
 
     csv = edited_df.to_csv(index=False).encode('utf-8')
+    now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
     st.download_button(
         label="📥 Download Sample Sheet CSV",
         data=csv,
-        file_name='sample_sheet.csv',
+        file_name=f'nf-gen_sample_sheet_{now_str}.csv',
         mime='text/csv'
     )
     # Additional Streamlit UI for workflow parameters
@@ -102,13 +104,14 @@ if uploaded_files:
     selected_profiles = st.sidebar.multiselect("Select Profiles", available_profiles, default=["docker"])
 
     # Optional Params Inputs
-    cpus = st.sidebar.number_input("CPUs", min_value=1, value=(os.cpu_count() -1), max_value = os.cpu_count())
+    cpus_col, retry_col = st.sidebar.columns(2)
+    cpus = cpus_col.number_input("CPUs", min_value=1, value=(os.cpu_count() -1), max_value = os.cpu_count())
+    retry = retry_col.number_input("Max Retries", min_value=0, value=3)
     mcol1, mcol2 = st.sidebar.columns(2)
     mem = mcol1.number_input("Memory", min_value=1, value=20, max_value=1000)
     mem_unit = mcol2.selectbox("Memory Unit", ["GB", "MB", "TB"], index=0)
     memory = f"{mem}.{mem_unit}" if mem_unit != "GB" else f"{mem}.GB"
     #memory = st.sidebar.text_input("Memory (e.g., 20.GB)", value="20.GB")
-    retry = st.sidebar.number_input("Max Retries", min_value=0, value=3)
     st.sidebar.write("Max Time")
     col1, col2, col3, col4 = st.sidebar.columns(4)
     days = col1.number_input("Days", min_value=0, value=10)
