@@ -7,7 +7,192 @@
 | ![Workflow](https://img.shields.io/badge/Workflow-Nextflow-blue) | ![Version](https://img.shields.io/badge/Version-0.0.1-teal) | ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen) |
 |------------------------------------------------------------------|-------------------------------------------------------------|-------------------------------------------------------------|
 
+### DAG
 
+```{mermaid}
+%%{
+  init: {
+    'theme': 'neutral'
+  }
+}%%
+flowchart TB
+    subgraph " "
+    v0["sampleSheet"]
+    v13["clusteringMethod"]
+    end
+    subgraph "RUNALL [RUNALL]"
+    v10(["QC"])
+    v14(["CLUSTERING"])
+    v17(["CELLTYPES_CELLDEXDOWNLOAD"])
+    subgraph "RUNALL:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
+    v18(["CELLTYPES_SINGLER"])
+    end
+    v12(( ))
+    end
+    subgraph " "
+    v11[" "]
+    v15[" "]
+    v16[" "]
+    v19[" "]
+    v20["sampleName"]
+    v21[" "]
+    v23["celldex_labs"]
+    v24["celldex_ref"]
+    v25["clust_res"]
+    v26["sampleName"]
+    v27[" "]
+    v28[" "]
+    v30["celldex_labs"]
+    v31["celldex_ref"]
+    v32[" "]
+    v36[" "]
+    v37[" "]
+    v43[" "]
+    v44[" "]
+    v46["clust_res"]
+    v47[" "]
+    v50[" "]
+    v51["sampleName"]
+    v52[" "]
+    v58[" "]
+    v59[" "]
+    v66[" "]
+    v67["sampleName"]
+    v68[" "]
+    v75[" "]
+    v76["sampleName"]
+    v77[" "]
+    end
+    subgraph "QC_ONLY [QC_ONLY]"
+    v22(["QC"])
+    end
+    subgraph "QC_CLUST [QC_CLUST]"
+    v29(["QC"])
+    v35(["CLUSTERING"])
+    v33(( ))
+    end
+    subgraph "CLUST_ONLY [CLUST_ONLY]"
+    v42(["CLUSTERING"])
+    v38(( ))
+    v39(( ))
+    v40(( ))
+    end
+    subgraph "QC_CELLTYPE [QC_CELLTYPE]"
+    v45(["QC"])
+    v48(["CELLTYPES_CELLDEXDOWNLOAD"])
+    subgraph "QC_CELLTYPE:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
+    v49(["CELLTYPES_SINGLER"])
+    end
+    end
+    subgraph "CLUST_CELLTYPE [CLUST_CELLTYPE]"
+    v57(["CLUSTERING"])
+    v61(["CELLTYPES_CELLDEXDOWNLOAD"])
+    subgraph "CLUST_CELLTYPE:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
+    v65(["CELLTYPES_SINGLER"])
+    end
+    v53(( ))
+    v54(( ))
+    v55(( ))
+    v60(( ))
+    v62(( ))
+    v63(( ))
+    v64(( ))
+    end
+    subgraph "CELLTYPE_ONLY [CELLTYPE_ONLY]"
+    v70(["CELLTYPES_CELLDEXDOWNLOAD"])
+    subgraph "CELLTYPE_ONLY:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
+    v74(["CELLTYPES_SINGLER"])
+    end
+    v69(( ))
+    v71(( ))
+    v72(( ))
+    v73(( ))
+    end
+    v1(( ))
+    v0 --> v1
+    v1 --> v10
+    v10 --> v14
+    v10 --> v11
+    v10 --> v17
+    v10 --> v18
+    v10 --> v12
+    v13 --> v14
+    v12 --> v14
+    v14 --> v16
+    v14 --> v15
+    v17 --> v18
+    v18 --> v21
+    v18 --> v20
+    v18 --> v19
+    v1 --> v22
+    v22 --> v28
+    v22 --> v27
+    v22 --> v26
+    v22 --> v25
+    v22 --> v24
+    v22 --> v23
+    v1 --> v29
+    v29 --> v35
+    v29 --> v32
+    v29 --> v31
+    v29 --> v30
+    v29 --> v33
+    v13 --> v35
+    v33 --> v35
+    v35 --> v37
+    v35 --> v36
+    v13 --> v42
+    v38 --> v42
+    v39 --> v42
+    v40 --> v42
+    v42 --> v44
+    v42 --> v43
+    v1 --> v45
+    v45 --> v49
+    v45 --> v47
+    v45 --> v46
+    v45 --> v48
+    v48 --> v49
+    v49 --> v52
+    v49 --> v51
+    v49 --> v50
+    v13 --> v57
+    v53 --> v57
+    v54 --> v57
+    v55 --> v57
+    v57 --> v59
+    v57 --> v58
+    v60 --> v61
+    v61 --> v65
+    v62 --> v65
+    v63 --> v65
+    v64 --> v65
+    v65 --> v68
+    v65 --> v67
+    v65 --> v66
+    v69 --> v70
+    v70 --> v74
+    v71 --> v74
+    v72 --> v74
+    v73 --> v74
+    v74 --> v77
+    v74 --> v76
+    v74 --> v75
+    v1 --> v38
+    v1 --> v39
+    v1 --> v40
+    v1 --> v53
+    v1 --> v54
+    v1 --> v55
+    v1 --> v60
+    v1 --> v62
+    v1 --> v63
+    v1 --> v64
+    v1 --> v69
+    v1 --> v71
+    v1 --> v72
+    v1 --> v73
+```
 
 ### Quick Links
 - [Documentation](https://github.com/addityea/nf-xen#readme)
