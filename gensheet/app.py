@@ -3,11 +3,11 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 
-# Enable wide layout
+# Set the page icon to the nf-xen logo
 st.set_page_config(
     page_title="nf-xen: GenSheet",
     layout="wide",
-    page_icon="fa-solid fa-file-csv"
+    page_icon="assets/nfxen.png"
 )
 
 # Default values
@@ -97,6 +97,8 @@ if uploaded_files:
     )
     # Additional Streamlit UI for workflow parameters
     st.sidebar.image("../assets/nfxen.png", width=200)
+    # Add a line
+    st.sidebar.markdown("---")
     st.sidebar.header("Workflow Parameters")
 
     # Profile Selection
@@ -153,3 +155,35 @@ if uploaded_files:
 
 else:
     st.info("Upload one or more .h5ad files to start.")
+st.markdown("---")
+# Add a footer with emojis and art
+st.markdown("""
+    <style>
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-top: 1px solid #e0e0e0;
+        }
+        footer p {
+            margin: 0;
+        }
+        .footer-icons {
+            font-size: 1.5em;
+            margin-top: 8px;
+        }
+        .footer-art {
+            font-family: monospace;
+            font-size: 0.95em;
+            color: #888;
+            margin-top: 10px;
+            white-space: pre;
+        }
+    </style>
+    <footer>
+        <p>Made by Aditya Singh</p>
+        <p>Follow me on GitHub: <a href="https://www.github.com/addityea" target="_blank">addityea</a></p>
+        <p>Powered by Python 🐍, Streamlit 🎈 and Nextflow 🧬</p>
+        <div class="footer-icons">🚀✨🧑‍💻📊🧬</div>
+    </footer>
+""", unsafe_allow_html=True)
