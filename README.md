@@ -119,6 +119,10 @@ Description of the columns:
 
 In order to help users create sample sheets, a simple web application is provided in the `gensheet` directory. This application allows users to upload `.h5ad` files and generate a sample sheet with the required parameters.
 
+<p align="center">
+    <img src="assets/gensheet_preview.png" alt="Gensheet application preview" width="100%"/>
+</p>
+
 **Recommended**: If you have [Pixi](https://pixi.run/) installed, you can use the `gensheet` application to create sample sheets easily.
 
 ```bash
