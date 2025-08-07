@@ -118,7 +118,14 @@ if uploaded_files:
     hours = col2.number_input("Hours", min_value=0, max_value=24, value=0)
     mins = col3.number_input("Minutes", min_value=0, max_value=60, value=0)
     secs = col4.number_input("Seconds", min_value=0, max_value=60, value=0)
-    time_param = f"{days}-{hours:02d}:{mins:02d}:{secs:02d}"
+    time_param = ""
+    if days == 0 and hours == 0 and mins == 0 and secs == 0:
+        st.sidebar.error("At least one time unit must be greater than 0.")
+        st.stop()
+    if days == 0:
+        time_param = f"{hours:02d}:{mins:02d}:{secs:02d}"
+    else:
+        time_param = f"{days}-{hours:02d}:{mins:02d}:{secs:02d}"
     account = st.sidebar.text_input("Account (Only for UPPMAX)", value="")
 
     # Clustering Method Dropdown (Louvain or Leiden)
