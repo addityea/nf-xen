@@ -77,10 +77,14 @@ if uploaded_files:
     st.write("#### Editor")
     st.write("Functions similar to a spreadsheet editor such as Excel or Google Sheets.")
     st.write("For bulk editing, edit one cell and drag the fill handle (small square at the bottom-right corner of the cell) to fill other cells with the same value.")
-    edited_df = st.data_editor(df, column_config ={
-        "qc" : st.column_config.SelectboxColumn("QC", options=["YES", "NO"], default="YES", required=True),
-        "clust" : st.column_config.SelectboxColumn("Clust", options=["YES", "NO"], default="YES", required=True)
-    })
+    edited_df = st.data_editor(
+        df,
+        column_config={
+            "qc": st.column_config.SelectboxColumn("QC", options=["YES", "NO"], default="YES", required=True),
+            "clust": st.column_config.SelectboxColumn("Clust", options=["YES", "NO"], default="YES", required=True)
+        },
+        hide_index=True
+    )
 
     csv = edited_df.to_csv(index=False).encode('utf-8')
     st.download_button(
