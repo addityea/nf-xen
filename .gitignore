@@ -3,5 +3,6 @@ results/
 .nextflow.*
 .nextflow/
 tests/
+conts/
 # macOS
 .DS_Store

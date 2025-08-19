@@ -237,6 +237,19 @@ flowchart TB
 
 3. Ensure dependencies are installed (e.g., Docker/Singularity, Java).
 
+### Offline setup
+
+If you need to run the pipeline in an offline environment, you can use the `offline` profile. This profile is configured to use Singularity containers and does not require internet access during execution.
+The only thing you will need is to download all the images in the `conts` directory. You can do this by running the following command from the nf-xen directory:
+
+```bash
+apptainer pull conts/singler_0.0.1.sif docker://saditya88/singler:0.0.1
+apptainer pull conts/nf-xen_clust.sif docker://saditya88/nf-xen:clust
+apptainer pull conts/nf-xen_qc.sif docker://saditya88/nf-xen:qc
+```
+After this, move the whole nf-xen directory to the offline environment and run the pipeline with the `offline` profile.
+Keep in mind that when using the `offline` profile, cellDex download will fail, hence, make sure you provide an already comressed `celldex` reference in the sample sheet, or download the references beforehand and provide their paths in the sample sheet.
+
 ## Usage
 
 Run the pipeline with the following command:
