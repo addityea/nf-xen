@@ -102,7 +102,7 @@ if uploaded_files:
     st.sidebar.header("Workflow Parameters")
 
     # Profile Selection
-    available_profiles = ["local", "docker", "arm", "apptainer", "conda", "uppmax", "test_full"]
+    available_profiles = ["local", "docker", "arm", "apptainer", "conda", "uppmax", "test_full", "offline"]
     selected_profiles = st.sidebar.multiselect("Select Profiles", available_profiles, default=["docker"])
 
     # Optional Params Inputs
