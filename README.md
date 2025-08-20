@@ -237,7 +237,7 @@ flowchart TB
 
 3. Ensure dependencies are installed (e.g., Docker/Singularity, Java).
 
-### Offline setup
+### Offline setup: <BROKEN FOR NOW>
 
 If you need to run the pipeline in an offline environment, you can use the `offline` profile. This profile is configured to use Singularity containers and does not require internet access during execution.
 The only thing you will need is to download all the images in the `conts` directory. You can do this by running the following command from the nf-xen directory:
@@ -249,6 +249,32 @@ apptainer pull conts/nf-xen_qc.sif docker://saditya88/nf-xen:qc
 ```
 After this, move the whole nf-xen directory to the offline environment and run the pipeline with the `offline` profile.
 Keep in mind that when using the `offline` profile, cellDex download will fail, hence, make sure you provide an already comressed `celldex` reference in the sample sheet, or download the references beforehand and provide their paths in the sample sheet.
+
+
+### PDC Dardel profile
+
+If you are running the pipeline on the PDC Dardel cluster, you can use the `pdc_kth` profile. This profile is configured to use Singularity containers and has specific settings for the PDC Dardel environment.
+Profile originally written by `Pontus Freyhult (@pontus)` and adapted for the nf-xen pipeline by `Aditya Singh (@addityea)`.
+
+Extra note: The Singularity images need to run using the `singularity run` insted of now default `singularity exec` command, hence, either run this command before running the pipeline:
+
+```bash
+export NXF_SINGULARITY_RUN_COMMAND=run
+```
+
+Or add this to your BASH/ ZSH profile using the following command:
+
+```bash
+if [ -n "$ZSH_VERSION" ]; then
+    echo 'export NXF_SINGULARITY_RUN_COMMAND=run' >> ~/.zshrc
+elif [ -n "$BASH_VERSION" ]; then
+    echo 'export NXF_SINGULARITY_RUN_COMMAND=run' >> ~/.bash_profile
+else
+    echo 'export NXF_SINGULARITY_RUN_COMMAND=run' >> ~/.profile
+fi
+```
+
+You'll need to reload your terminal or source the profile file to apply the changes.
 
 ## Usage
 
