@@ -244,8 +244,8 @@ In this example, we download all the images to the `conts` directory. You can do
 
 ```bash
 apptainer pull conts/docker.io-saditya88-singler-0.0.1.img docker://saditya88/singler:0.0.1
-apptainer pull docker.io-saditya88-nf-xen-clust.img docker://saditya88/nf-xen:clust
-apptainer pull docker.io-saditya88-nf-xen-qc.img docker://saditya88/nf-xen:qc
+apptainer pull conts/docker.io-saditya88-nf-xen-clust.img docker://saditya88/nf-xen:clust
+apptainer pull conts/docker.io-saditya88-nf-xen-qc.img docker://saditya88/nf-xen:qc
 ```
 After this, move the whole nf-xen directory to the offline environment and setup the `NXF_SINGULARITY_CACHEDIR` environment variable to point to the `conts` directory, like so:
 
