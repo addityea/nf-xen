@@ -6,10 +6,10 @@ workflow CLUST_ONLY {
 
     main:
     CLUSTERING(
-        ch_input.map { row -> row.sampleName },
-        ch_input.map { row -> row.h5ad },
+        ch_input.map { row -> row[0] },
+        ch_input.map { row -> row[1] },
         params.clust_method,
-        ch_input.map { row -> row.clust_res == 'NA' ? params.clust_res : row.clust_res }
+        ch_input.map { row -> row[15] == 'NA' ? params.clust_res : row.clust_res }
     )
 
 }
