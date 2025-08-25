@@ -257,30 +257,19 @@ export NXF_SINGULARITY_CACHEDIR=$(pwd)/conts
 Keep in mind that when running offline, cellDex download will fail, hence, make sure you provide an already comressed `celldex` reference in the sample sheet, or download the references beforehand and provide their paths in the sample sheet.
 
 
-### PDC Dardel profile
+### HPC profiles (SUPR NAISS Sweden only)
 
-If you are running the pipeline on the PDC Dardel cluster, you can use the `pdc_kth` profile. This profile is configured to use Singularity containers and has specific settings for the PDC Dardel environment.
-Profile originally written by `Pontus Freyhult (@pontus)` and adapted for the nf-xen pipeline by `Aditya Singh (@addityea)`.
+`pdc_kth` profile for PDC Dardel cluster
+`uppmax` profile for UPPMAX cluster including auto-detect for `miarka`, `pelle`, `snowy` and `rackham` queues.
+
+If you are running the pipeline on these HPC clusters, you can use the specific profile. These profiles are configured to use Singularity containers and has specific settings for the HPC environments.
+Profiles originally written by `Pontus Freyhult (@pontus)` and adapted for the pipeline by `Aditya Singh (@addityea)`.
 
 Extra note: The Singularity images need to run using the `singularity run` insted of now default `singularity exec` command, hence, either run this command before running the pipeline:
 
 ```bash
 export NXF_SINGULARITY_RUN_COMMAND=run
 ```
-
-Or add this to your BASH/ ZSH profile using the following command:
-
-```bash
-if [ -n "$ZSH_VERSION" ]; then
-    echo 'export NXF_SINGULARITY_RUN_COMMAND=run' >> ~/.zshrc
-elif [ -n "$BASH_VERSION" ]; then
-    echo 'export NXF_SINGULARITY_RUN_COMMAND=run' >> ~/.bash_profile
-else
-    echo 'export NXF_SINGULARITY_RUN_COMMAND=run' >> ~/.profile
-fi
-```
-
-You'll need to reload your terminal or source the profile file to apply the changes.
 
 ## Usage
 
