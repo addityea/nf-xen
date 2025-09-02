@@ -286,6 +286,7 @@ There are some profiles available for different environments:
 - 'arm' for specific flags for ARM architecture
 - 'apptainer' for running with Apptainer
 - 'UPPMAX' for running on UPPMAX cluster
+- 'pdc_kth' for running on PDC KTH cluster
 
 ## Parameters
 
@@ -389,6 +390,7 @@ Depending on the modules run, the pipeline can generate the following outputs:
 | `Celldex` | Cell type annotation | [Celldex](https://bioconductor.org/packages/release/data/experiment/html/celldex.html) |
 | `AnndataR` | R interface for AnnData | [AnndataR](https://github.com/scverse/anndataR?tab=readme-ov-file)
 | `SingleR` | Single-cell RNA-seq analysis | [SingleR](https://bioconductor.org/packages/release/bioc/html/SingleR.html) |
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request.
