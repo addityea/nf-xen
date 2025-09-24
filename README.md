@@ -239,19 +239,18 @@ flowchart TB
 
 ### Offline setup
 
-If you need to run the pipeline in an offline environment, you can cache all the Singularity containers and set the singularity cache to point to that directory.
-In this example, we download all the images to the `conts` directory. You can do this by running the following command from the nf-xen directory:
+If you need to run the pipeline in an offline environment, you can cache all the Singularity containers and add the `offline` profile.
+There is a helpful script in the `conts` directory to pull all the necessary containers:
 
 ```bash
-apptainer pull conts/docker.io-saditya88-singler-0.0.1.img docker://saditya88/singler:0.0.1
-apptainer pull conts/docker.io-saditya88-nf-xen-clust.img docker://saditya88/nf-xen:clust
-apptainer pull conts/docker.io-saditya88-nf-xen-qc.img docker://saditya88/nf-xen:qc
+cd conts
+bash get_all.sh
 ```
-After this, move the whole nf-xen directory to the offline environment and setup the `NXF_SINGULARITY_CACHEDIR` environment variable to point to the `conts` directory, like so:
+After this, move the whole nf-xen directory to the offline environment and simply run the pipeline with the `offline` profile:
 
 ```bash
-# If ran from within the nf-xen directory
-export NXF_SINGULARITY_CACHEDIR=$(pwd)/conts
+cd /path/to/nf-xen
+nextflow run main.nf --samplesheet <sample sheet> -profile offline -resume
 ```
 
 Keep in mind that when running offline, cellDex download will fail, hence, make sure you provide an already comressed `celldex` reference in the sample sheet, or download the references beforehand and provide their paths in the sample sheet.
@@ -261,6 +260,8 @@ Keep in mind that when running offline, cellDex download will fail, hence, make 
 
 `pdc_kth` profile for PDC Dardel cluster
 `uppmax` profile for UPPMAX cluster including auto-detect for `miarka`, `pelle`, `snowy` and `rackham` queues.
+
+Now also includes expected time requirements for each process, so that jobs are submitted with reasonable time limits.
 
 If you are running the pipeline on these HPC clusters, you can use the specific profile. These profiles are configured to use Singularity containers and has specific settings for the HPC environments.
 Profiles originally written by `Pontus Freyhult (@pontus)` and adapted for the pipeline by `Aditya Singh (@addityea)`.
