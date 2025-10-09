@@ -6,9 +6,6 @@
 
 | ![Workflow](https://img.shields.io/badge/Workflow-Nextflow-blue) | ![Version](https://img.shields.io/badge/Version-0.0.2-teal) | ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen) | [![DOI](https://zenodo.org/badge/1030190414.svg)](https://doi.org/10.5281/zenodo.17305888)
 
-
-|------------------------------------------------------------------|-------------------------------------------------------------|-------------------------------------------------------------|
-
 ### DAG
 
 ```mermaid
