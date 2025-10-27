@@ -205,7 +205,7 @@ flowchart TB
 
 ## Features
 
-- **Automated Workflow**: Streamlines the ATAC-seq analysis process.
+- **Automated Workflow**: Streamlines the 10X Xenium downstream data analysis process.
 - **Reproducibility**: Ensures consistent results across runs using Nextflow.
 - **Scalability**: Supports execution on local machines, HPC clusters, and cloud platforms.
 - **Customizable**: Easily configurable to suit specific experimental needs.
