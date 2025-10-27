@@ -131,7 +131,7 @@ if uploaded_files:
     account = st.sidebar.text_input("Account (Only for UPPMAX)", value="")
 
     # Clustering Method Dropdown (Louvain or Leiden)
-    clust_method = st.sidebar.selectbox("Clustering Method", ["louvain", "leiden"], index=0)
+    clust_method = st.sidebar.selectbox("Clustering Method", ["leiden", "louvain"], index=0)
     clust_res = st.sidebar.text_input("Clustering Resolution(s)", value="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5")
 
     # Output Directory
