@@ -107,7 +107,7 @@ if uploaded_files:
 
     # Optional Params Inputs
     cpus_col, retry_col = st.sidebar.columns(2)
-    cpus = cpus_col.number_input("CPUs", min_value=1, value=(os.cpu_count() -1), max_value = os.cpu_count())
+    cpus = cpus_col.number_input("CPUs", min_value=1, value=(os.cpu_count() -1))
     retry = retry_col.number_input("Max Retries", min_value=0, value=3)
     mcol1, mcol2 = st.sidebar.columns(2)
     mem = mcol1.number_input("Memory", min_value=1, value=20, max_value=1000)
