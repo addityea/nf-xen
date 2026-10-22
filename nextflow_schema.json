@@ -1,0 +1,105 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/addityea/nf-xen/main/nextflow_schema.json",
+    "title": "nf-xen parameters",
+    "description": "nf-xen — end-to-end Xenium spatial transcriptomics analysis",
+    "type": "object",
+    "properties": {
+        "sampleSheet": {
+            "type": "string",
+            "description": "Path to the sample sheet CSV (validated against assets/samplesheet_schema.json)"
+        },
+        "outdir": {
+            "type": "string",
+            "default": "results",
+            "description": "Output directory"
+        },
+        "help": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show help and exit"
+        },
+        "cpus": {
+            "type": "integer",
+            "default": 14,
+            "description": "Max CPUs per task / local executor cap"
+        },
+        "time": {
+            "type": "string",
+            "default": "10h",
+            "description": "Default time limit per task"
+        },
+        "retry": {
+            "type": "integer",
+            "default": 3,
+            "description": "Max retries for failed tasks"
+        },
+        "highMemForks": {
+            "type": "integer",
+            "default": 2,
+            "description": "Max concurrent tasks labelled highMem*"
+        },
+        "fatMemForks": {
+            "type": "integer",
+            "default": 1,
+            "description": "Max concurrent tasks labelled fatMem*"
+        },
+        "clustering_method": {
+            "type": "string",
+            "default": "leiden",
+            "enum": ["leiden", "louvain"],
+            "description": "Graph clustering method (louvain is deprecated in scanpy)"
+        },
+        "clustering_resolutions": {
+            "type": "string",
+            "default": "0.5,0.8,1.0,1.2",
+            "description": "Comma-separated clustering resolutions (per-sample override in sample sheet)"
+        },
+        "n_neighbors": {
+            "type": "integer",
+            "default": 15,
+            "description": "k for the k-NN graph used for clustering/UMAP"
+        },
+        "celltyping_method": {
+            "type": "string",
+            "default": "singler",
+            "enum": ["singler", "celltypist", "both"],
+            "description": "Cell type annotation backend(s)"
+        },
+        "celltypist_model": {
+            "type": "string",
+            "default": "Immune_All_Low.pkl",
+            "description": "Default CellTypist model(s), '--'-joined names or .pkl paths"
+        },
+        "celltypist_majority_voting": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable CellTypist majority voting"
+        },
+        "spatial_knn": {
+            "type": "integer",
+            "default": 6,
+            "description": "k for the squidpy spatial k-NN graph"
+        },
+        "spatial_top_svg": {
+            "type": "integer",
+            "default": 20,
+            "description": "Number of top Moran's I (spatially variable) genes to report/plot"
+        },
+        "container_python": {
+            "type": "string",
+            "default": "saditya88/nf-xen:python-1.0",
+            "description": "Image for Python (scanpy/squidpy/celltypist) processes"
+        },
+        "container_singler": {
+            "type": "string",
+            "default": "docker.io/saditya88/singler:0.0.1",
+            "description": "Image for the SingleR process"
+        },
+        "container_quarto": {
+            "type": "string",
+            "default": "quay.io/quarto/quarto:latest",
+            "description": "Image for the Quarto report process"
+        }
+    }
+}

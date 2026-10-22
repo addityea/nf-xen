@@ -2,7 +2,8 @@ work/
 results/
 .nextflow.*
 .nextflow/
-tests/
+tests/*_xenium_adata_regions.h5ad
 conts/
+nf_xen_params.json
 # macOS
 .DS_Store

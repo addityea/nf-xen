@@ -4,9 +4,11 @@
 
 # nf-xen
 
-| ![Workflow](https://img.shields.io/badge/Workflow-Nextflow-blue) | ![Version](https://img.shields.io/badge/Version-0.0.2-teal) | ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen) | [![DOI](https://zenodo.org/badge/1030190414.svg)](https://doi.org/10.5281/zenodo.17305888)
+| ![Workflow](https://img.shields.io/badge/Workflow-Nextflow-blue) | ![Version](https://img.shields.io/badge/Version-1.0.0-teal) | ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen) | [![DOI](https://zenodo.org/badge/1030190414.svg)](https://doi.org/10.5281/zenodo.17305888) |
 
-### DAG
+`nf-xen` is a [Nextflow](https://www.nextflow.io/) pipeline for downstream analysis of 10x Xenium spatial transcriptomics data, from an annotated `AnnData` (`.h5ad`) object to a rendered HTML report: quality control, clustering, cell type annotation, spatial statistics, and a Quarto report per run.
+
+## Pipeline overview
 
 ```mermaid
 %%{
@@ -14,391 +16,207 @@
     'theme': 'neutral'
   }
 }%%
-flowchart TB
-    subgraph " "
-    v0["sampleSheet"]
-    v13["clusteringMethod"]
+flowchart LR
+    SS["sample sheet<br/>(validated with nf-schema)"] --> S((samples))
+    S -->|steps: qc| QC([QC])
+    QC -->|qc'd h5ad| P((processed))
+    S -->|no qc step| P
+    P -->|steps: clustering| CL([CLUSTERING<br/>Leiden / Louvain])
+    P -->|steps: celltyping| CT[CELLTYPING]
+    subgraph CTX [CELLTYPING]
+        CDL([CELLDEX_DOWNLOAD]) --> SR([CELLTYPES_SINGLER])
+        CTP([CELLTYPES_CELLTYPIST])
     end
-    subgraph "RUNALL [RUNALL]"
-    v10(["QC"])
-    v14(["CLUSTERING"])
-    v17(["CELLTYPES_CELLDEXDOWNLOAD"])
-    subgraph "RUNALL:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
-    v18(["CELLTYPES_SINGLER"])
-    end
-    v12(( ))
-    end
-    subgraph " "
-    v11[" "]
-    v15[" "]
-    v16[" "]
-    v19[" "]
-    v20["sampleName"]
-    v21[" "]
-    v23["celldex_labs"]
-    v24["celldex_ref"]
-    v25["clust_res"]
-    v26["sampleName"]
-    v27[" "]
-    v28[" "]
-    v30["celldex_labs"]
-    v31["celldex_ref"]
-    v32[" "]
-    v36[" "]
-    v37[" "]
-    v43[" "]
-    v44[" "]
-    v46["clust_res"]
-    v47[" "]
-    v50[" "]
-    v51["sampleName"]
-    v52[" "]
-    v58[" "]
-    v59[" "]
-    v66[" "]
-    v67["sampleName"]
-    v68[" "]
-    v75[" "]
-    v76["sampleName"]
-    v77[" "]
-    end
-    subgraph "QC_ONLY [QC_ONLY]"
-    v22(["QC"])
-    end
-    subgraph "QC_CLUST [QC_CLUST]"
-    v29(["QC"])
-    v35(["CLUSTERING"])
-    v33(( ))
-    end
-    subgraph "CLUST_ONLY [CLUST_ONLY]"
-    v42(["CLUSTERING"])
-    v38(( ))
-    v39(( ))
-    v40(( ))
-    end
-    subgraph "QC_CELLTYPE [QC_CELLTYPE]"
-    v45(["QC"])
-    v48(["CELLTYPES_CELLDEXDOWNLOAD"])
-    subgraph "QC_CELLTYPE:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
-    v49(["CELLTYPES_SINGLER"])
-    end
-    end
-    subgraph "CLUST_CELLTYPE [CLUST_CELLTYPE]"
-    v57(["CLUSTERING"])
-    v61(["CELLTYPES_CELLDEXDOWNLOAD"])
-    subgraph "CLUST_CELLTYPE:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
-    v65(["CELLTYPES_SINGLER"])
-    end
-    v53(( ))
-    v54(( ))
-    v55(( ))
-    v60(( ))
-    v62(( ))
-    v63(( ))
-    v64(( ))
-    end
-    subgraph "CELLTYPE_ONLY [CELLTYPE_ONLY]"
-    v70(["CELLTYPES_CELLDEXDOWNLOAD"])
-    subgraph "CELLTYPE_ONLY:CELLTYPE_ASSIGNMENT [CELLTYPE_ASSIGNMENT]"
-    v74(["CELLTYPES_SINGLER"])
-    end
-    v69(( ))
-    v71(( ))
-    v72(( ))
-    v73(( ))
-    end
-    v1(( ))
-    v0 --> v1
-    v1 --> v10
-    v10 --> v14
-    v10 --> v11
-    v10 --> v17
-    v10 --> v18
-    v10 --> v12
-    v13 --> v14
-    v12 --> v14
-    v14 --> v16
-    v14 --> v15
-    v17 --> v18
-    v18 --> v21
-    v18 --> v20
-    v18 --> v19
-    v1 --> v22
-    v22 --> v28
-    v22 --> v27
-    v22 --> v26
-    v22 --> v25
-    v22 --> v24
-    v22 --> v23
-    v1 --> v29
-    v29 --> v35
-    v29 --> v32
-    v29 --> v31
-    v29 --> v30
-    v29 --> v33
-    v13 --> v35
-    v33 --> v35
-    v35 --> v37
-    v35 --> v36
-    v13 --> v42
-    v38 --> v42
-    v39 --> v42
-    v40 --> v42
-    v42 --> v44
-    v42 --> v43
-    v1 --> v45
-    v45 --> v49
-    v45 --> v47
-    v45 --> v46
-    v45 --> v48
-    v48 --> v49
-    v49 --> v52
-    v49 --> v51
-    v49 --> v50
-    v13 --> v57
-    v53 --> v57
-    v54 --> v57
-    v55 --> v57
-    v57 --> v59
-    v57 --> v58
-    v60 --> v61
-    v61 --> v65
-    v62 --> v65
-    v63 --> v65
-    v64 --> v65
-    v65 --> v68
-    v65 --> v67
-    v65 --> v66
-    v69 --> v70
-    v70 --> v74
-    v71 --> v74
-    v72 --> v74
-    v73 --> v74
-    v74 --> v77
-    v74 --> v76
-    v74 --> v75
-    v1 --> v38
-    v1 --> v39
-    v1 --> v40
-    v1 --> v53
-    v1 --> v54
-    v1 --> v55
-    v1 --> v60
-    v1 --> v62
-    v1 --> v63
-    v1 --> v64
-    v1 --> v69
-    v1 --> v71
-    v1 --> v72
-    v1 --> v73
+    CT --> CTX
+    P -->|steps: spatial| SP([SPATIAL<br/>squidpy])
+    QC & CL & CT & SP --> RD([REPORT_DATA])
+    RD --> RQ([REPORT<br/>Quarto HTML])
 ```
 
-### Quick Links
-- [Documentation](https://github.com/addityea/nf-xen#readme)
-- [Issues](https://github.com/addityea/nf-xen/issues)
-- [Nextflow](https://www.nextflow.io/)
-- [Seqera](https://seqera.io/)
-
-`nf-xen` is a bioinformatics pipeline built using [Nextflow](https://www.nextflow.io/) for downstream analysis of 10X Xenium data.
-
-*`nf-xen` is currently in development and more modules will be added and optimizations performed in time.*
+Each sample declares its own `steps` (`qc`, `clustering`, `celltyping`, `spatial`) in the sample sheet — every module runs once and samples are routed to it by channel filtering. Downstream steps automatically use the QC'd object when QC ran for that sample, and the raw input otherwise.
 
 ## Features
 
-- **Automated Workflow**: Streamlines the 10X Xenium downstream data analysis process.
-- **Reproducibility**: Ensures consistent results across runs using Nextflow.
-- **Scalability**: Supports execution on local machines, HPC clusters, and cloud platforms.
-- **Customizable**: Easily configurable to suit specific experimental needs.
+- **Modern Nextflow**: DSL-2 modules with the strict parser (Nextflow ≥ 25.10), `nf-schema` plugin for parameter and sample-sheet validation, Wave/community containers, per-label resource model (`lowMemMT`, `highMemMT`, `highMemST`, `lowMemST`, `process_single`).
+- **QC** informed by Xenium best practice (Salmelin *et al.* 2025, *Nature Methods*; 10x Xenium Onboard Analysis metrics): count/gene/area/area-ratio thresholds, negative-control and doublet handling, per-gene cell-count filter, QC PDF.
+- **Clustering**: Leiden (default) or Louvain, multiple resolutions, UMAP/tSNE-free PDF summaries sized for Xenium panels.
+- **Cell typing**: two interchangeable backends — SingleR + celldex references (auto-downloaded HDF5SummarizedExperiment tarballs or local files) and CellTypist models (auto-downloaded or local `.pkl`).
+- **Spatial**: squidpy neighbourhood enrichment, co-occurrence and Moran's I spatially-variable genes.
+- **Report**: one Quarto-rendered HTML report per run combining every step's summary JSON and figures.
+- **Reproducibility**: containers for every process, offline profile, HPC profiles.
 
 ## Requirements
 
-- [Nextflow](https://www.nextflow.io/)
-- [Docker](https://www.docker.com/) or [Apptainer](https://sylabs.io/) (optional for containerized execution)
-- Java 8 or higher
+- [Nextflow](https://www.nextflow.io/) ≥ 25.10 (Java 17+)
+- [Docker](https://www.docker.com/) / [Apptainer](https://apptainer.org/) / [Singularity](https://sylabs.io/) (recommended)
 
-## Installation
-
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/addityea/nf-xen.git
-    cd nf-xen
-    ```
-
-2. Install Nextflow:
-    ```bash
-    curl -s https://get.nextflow.io | bash
-    # Make sure it's executable and move to PATH
-    chmod +x nextflow
-    sudo mv nextflow /usr/local/bin/
-    ```
-    
-    In case you don't have `sudo` access, you can move the `nextflow` binary to a directory in your `PATH` (e.g., `~/bin`) or run it from the current directory by appending `./` before the command.
-
-3. Ensure dependencies are installed (e.g., Docker/Singularity, Java).
-
-### Offline setup
-
-If you need to run the pipeline in an offline environment, you can cache all the Singularity containers and add the `offline` profile.
-There is a helpful script in the `conts` directory to pull all the necessary containers:
+## Quick start
 
 ```bash
-cd conts
-bash get_all.sh
+nextflow run addityea/nf-xen --sampleSheet samplesheet.csv -profile docker --outdir results
 ```
-After this, move the whole nf-xen directory to the offline environment and simply run the pipeline with the `offline` profile:
+
+Or from a clone:
 
 ```bash
-cd /path/to/nf-xen
-nextflow run main.nf --samplesheet <sample sheet> -profile offline -resume
+git clone https://github.com/addityea/nf-xen.git && cd nf-xen
+nextflow run main.nf --sampleSheet tests/sample_sheet_full.csv -profile docker --outdir results -resume
 ```
 
-Keep in mind that when running offline, cellDex download will fail, hence, make sure you provide an already comressed `celldex` reference in the sample sheet, or download the references beforehand and provide their paths in the sample sheet.
+A minimal sample sheet:
 
+```csv
+sample,input,steps
+T1,/path/to/tissue1.h5ad,"qc,clustering,celltyping,spatial"
+```
 
-### HPC profiles (SUPR NAISS Sweden only)
+Run the bundled test dataset with `nextflow run main.nf -profile test,docker`.
 
-`pdc_kth` profile for PDC Dardel cluster
-`uppmax` profile for UPPMAX cluster including auto-detect for `miarka`, `pelle`, `snowy` and `rackham` queues.
+### Test profiles (nf-core style)
 
-Now also includes expected time requirements for each process, so that jobs are submitted with reasonable time limits.
-
-If you are running the pipeline on these HPC clusters, you can use the specific profile. These profiles are configured to use Singularity containers and has specific settings for the HPC environments.
-Profiles originally written by `Pontus Freyhult (@pontus)` and adapted for the pipeline by `Aditya Singh (@addityea)`.
-
-Extra note: The Singularity images need to run using the `singularity run` insted of now default `singularity exec` command, hence, either run this command before running the pipeline:
+| Profile | Data | Purpose |
+| ------- | ---- | ------- |
+| `test` | Bundled synthetic toy dataset (`tests/toy_xenium.h5ad`, ~400 cells × 79 genes, no download needed) | Smoke-test the whole flow — sample-sheet validation, QC, clustering, spatial, report — in a couple of minutes. Cell typing is skipped (it needs reference downloads). |
+| `test_full` | Public 10x Xenium human pancreas FFPE dataset (111 MB, auto-downloaded from Hugging Face) | Real data, every step including SingleR (monaco_immune) and CellTypist — small but meaningful outputs. |
 
 ```bash
-export NXF_SINGULARITY_RUN_COMMAND=run
+nextflow run main.nf -profile test,docker          # toy smoke test
+nextflow run main.nf -profile test_full,docker     # real small dataset, all steps
 ```
 
-## Usage
+The toy dataset is deterministic and can be regenerated with `python3 bin/make_toy_h5ad.py`.
 
-Run the pipeline with the following command:
+## Sample sheet
 
-```bash
-nextflow run main.nf --samplesheet <sample sheet> -resume  
+The sample sheet is validated against `assets/samplesheet_schema.json` (nf-schema). Only `sample`, `input` and `steps` are required; everything else is optional and falls back to pipeline defaults.
+
+| Column | Description |
+| ------ | ----------- |
+| `sample` | Unique sample id `[A-Za-z0-9_]`. **[required]** |
+| `input` | Path to the Xenium `.h5ad` (AnnData) file. **[required]** |
+| `steps` | Comma-separated subset of `qc,clustering,celltyping,spatial`. **[required]** |
+| `region_col` | `obs` column with region labels; the region matching the sample name (or this value) is analysed. Empty = all cells. |
+| `min_counts` / `max_counts` | Transcripts per cell bounds (`-1` disables). |
+| `min_genes` / `max_genes` | Genes per cell bounds (`-1` disables). |
+| `min_cell_area` / `max_cell_area` | Cell area bounds in µm² (`-1` disables). |
+| `min_area_ratio` / `max_area_ratio` | Nucleus/cell area ratio bounds (`-1` disables). |
+| `max_nucleus_area` | Nucleus area upper bound (`-1` disables). |
+| `min_cells_per_gene` | Drop genes detected in fewer cells (`-1` disables). |
+| `max_control_fraction` | Fail sample if negative-control probe fraction exceeds this (`-1` disables). |
+| `exclude_doublets` | Drop cells flagged `is_doublet` (Xenium Onboard Analysis ≥ 2.0 / Xenium Analyzer outputs). |
+| `clustering_resolutions` | Comma-separated resolutions, e.g. `0.4,0.6,0.8`. Empty = `--clustering_resolutions`. |
+| `celldex_ref` | SingleR reference(s): `name__version` (e.g. `monaco_immune__2024-02-26`, auto-downloaded) or path to a local HDF5SummarizedExperiment `.tar.gz`. Join several with `--`. |
+| `celldex_labels` | `colData` label column per reference, joined with `--` (e.g. `label.main--label.fine`). |
+| `celltypist_model` | CellTypist model name(s) (e.g. `Immune_All_Low.pkl`) or local `.pkl` path(s), joined with `--`. Empty = `--celltypist_model`. |
+
+Example with everything enabled:
+
+```csv
+sample,input,steps,region_col,min_counts,max_counts,min_genes,max_genes,min_cell_area,max_cell_area,min_area_ratio,max_area_ratio,max_nucleus_area,min_cells_per_gene,max_control_fraction,exclude_doublets,clustering_resolutions,celldex_ref,celldex_labels,celltypist_model
+460_13,/data/460_13_xenium_adata_regions.h5ad,"qc,clustering,celltyping,spatial",all_regions,10,500,5,110,20,500,0.1,0.9,110,5,-1,false,0.6,monaco_immune__2024-02-26,label.main,
 ```
-
-You may customise the pipeline by modifying the `nextflow.config` file or by passing additional parameters in the command line.
-There are some profiles available for different environments:
-- 'local' for running on a local machine
-- 'docker' for running with Docker
-- 'arm' for specific flags for ARM architecture
-- 'apptainer' for running with Apptainer
-- 'UPPMAX' for running on UPPMAX cluster
-- 'pdc_kth' for running on PDC KTH cluster
 
 ## Parameters
 
-The pipeline accepts the following parameters, which can be customized to suit your analysis needs:
+Global parameters (validated against `nextflow_schema.json`, see `nextflow run main.nf --help`):
 
-- **`--sampleSheet`**: Path to the sample sheet file. *(Default: `null`)*
-- **`--outdir`**: Directory where output files will be saved. *(Default: `results`)*
-- **`--cpus`**: Number of threads to use for computation. *(Default: `14`)*
-- **`--account`**: UPPMAX account to use for job submission. *(Default: `null`)*
-- **`--memory`**: Amount of memory allocated per process. *(Default: `20.GB`)*
-- **`--time`**: Maximum runtime for processes. *(Default: `10-00:00:00`)*
-- **`--retry`**: Number of retries for failed processes. *(Default: `3`)*
-- **`--highMemForks`**: Maximum number of high-memory forks. *(Default: `2`)*
-- **`--fatMemForks`**: Maximum number of fat-memory forks. *(Default: `1`)*
-- **`--clust_method`**: Clustering method to use. *(Default: `louvain`)*
-- **`--clust_res`**: Comma-separated clustering resolution values. *(Default: `0.5,0.6,0.7`)*
+| Parameter | Default | Description |
+| --------- | ------- | ----------- |
+| `--sampleSheet` | `null` | Sample sheet CSV. |
+| `--outdir` | `results` | Output directory. |
+| `--cpus` / `--memory` / `--time` | `14` / `20.GB` / `10h` | Default per-task resources. |
+| `--retry` | `3` | Retry count for failed tasks. |
+| `--clustering_method` | `leiden` | `leiden` or `louvain`. |
+| `--clustering_resolutions` | `0.5,0.8,1.0,1.2` | Default resolutions when not set per sample. |
+| `--n_neighbors` | `15` | kNN graph neighbours for clustering. |
+| `--celltyping_method` | `singler` | `singler`, `celltypist` or `both`. |
+| `--celltypist_model` | `Immune_All_Low.pkl` | Default CellTypist model. |
+| `--celltypist_majority_voting` | `true` | CellTypist majority voting. |
+| `--spatial_knn` | `6` | Spatial KNN graph for squidpy. |
+| `--spatial_top_svg` | `20` | Top spatially variable genes (Moran's I). |
+| `--container_python` | `saditya88/nf-xen:python-1.0` | scanpy/squidpy/celltypist image (build with `docker build -t saditya88/nf-xen:python-1.0 docker/`, or use your own). |
+| `--container_singler` | `saditya88/singler:0.0.1` | R/SingleR/celldex image. |
+| `--container_quarto` | `ghcr.io/quarto-dev/quarto:latest` | Quarto image for the report. |
 
-You can override these parameters in your `nextflow run` command or by editing the `nextflow.config` file.
+## Profiles
 
-Majority of parameteres are set per sample using the sample sheet, hence it has a long list of parameters that can be set per sample. It also sets which modules will run for each sample.
-Explained below:
+| Profile | Purpose |
+| ------- | ------- |
+| `test` | Toy smoke test: bundled synthetic dataset, whole flow, no downloads. |
+| `test_full` | Small public dataset (10x Xenium human pancreas, 111 MB) with every step enabled. |
+| `docker` / `arm` | Docker (arm adds `--platform linux/amd64` for Apple Silicon). |
+| `apptainer` | Apptainer/Singularity with Wave `oras://` images. |
+| `offline` | Pre-pulled Apptainer images in `conts/` (see below). |
+| `pdc_kth` | PDC Dardel (KTH) SLURM cluster. |
+| `uppmax` | UPPMAX (miarka/pelle/snowy/rackham) SLURM cluster. |
 
-Example of a sample sheet:
+### Offline setup
 
-```csv
-sampleName,h5ad,region,min_counts,max_counts,min_genes,max_genes,min_cell_area,max_cell_area,min_area_ratio,max_area_ratio,max_nucleus_area,min_cells_per_gene,qc,clust,clust_res,celldex_ref,celldex_labs
-Test,/Users/xsinad/Documents/Codes/nf-xen/tests/test.h5ad,all_regions,10,500,5,110,20,500,0.1,0.9,110,5,YES,YES,0.6,hpca__2024-02-26,label.main
+Pull all containers on a machine with network access, then move the repo:
+
+```bash
+cd conts && bash get_all.sh
 ```
-Description of the columns:
-- **`sampleName`**: Unique identifier for the sample. [Required]
-- **`h5ad`**: Path to the input `.h5ad` file containing the Xenium data. [Required]
-- **`region`**: Region of interest for analysis (e.g., `all_regions`, `region1`, etc.). [Required]
-- **`min_counts`**: Minimum number of counts per cell. [Required, if set to -1, filtering is not applied]
-- **`max_counts`**: Maximum number of counts per cell. [Required, if set to -1, filtering is not applied]
-- **`min_genes`**: Minimum number of genes expressed per cell. [Required, if set to -1, filtering is not applied]
-- **`max_genes`**: Maximum number of genes expressed per cell. [Required, if set to -1, filtering is not applied]
-- **`min_cell_area`**: Minimum area of the cell. [Required, if set to -1, filtering is not applied]
-- **`max_cell_area`**: Maximum area of the cell. [Required, if set to -1, filtering is not applied]
-- **`min_area_ratio`**: Minimum area ratio of the cell. [Required, if set to -1, filtering is not applied]
-- **`max_area_ratio`**: Maximum area ratio of the cell. [Required, if set to -1, filtering is not applied]
-- **`max_nucleus_area`**: Maximum area of the nucleus. [Required, if set to -1, filtering is not applied]
-- **`min_cells_per_gene`**: Minimum number of cells expressing a gene. [Required, if set to -1, filtering is not applied]
-- **`qc`**: Whether to perform quality control (`YES` or `NO`).
-- **`clust`**: Whether to perform clustering (`YES` or `NO`).
-- **`clust_res`**: Clustering resolution to use (e.g., `0.5`, `0.6`, etc.). If set to NA, it will use a range of resolutions defined in the `nextflow.config` file, or via the `--clust_res` parameter where one may specify a comma-separated list of resolutions in quotes. For example, `"0.1,0.2,0.3,0.5,0.6"`
-- **`celldex_ref`**: Cell type reference for annotation (e.g., `hpca__2024-02-26`, `monaco_immune__2024-02-26`).
-- **`celldex_labs`**: Cell type labels to use for annotation (e.g., `label.main`, `label.fine`).
 
-## Gensheet: Create Sample Sheets with ease
+Then on the offline machine:
 
-In order to help users create sample sheets, a simple web application is provided in the `gensheet` directory. This application allows users to upload `.h5ad` files and generate a sample sheet with the required parameters.
+```bash
+nextflow run main.nf --sampleSheet sheet.csv -profile offline -resume
+```
 
-<p align="center">
-    <img src="assets/gensheet_preview.png" alt="Gensheet application preview" width="100%"/>
-</p>
+CellDex auto-download obviously fails offline: provide local `.tar.gz` reference paths in the `celldex_ref` column instead.
 
-**Recommended**: If you have [Pixi](https://pixi.run/) installed, you can use the `gensheet` application to create sample sheets easily.
+## Output
+
+```
+results/
+├── <sample>/
+│   ├── qc/          <sample>_qc.h5ad, <sample>_qc.pdf, <sample>_qc_summary.json
+│   ├── clustering/  <sample>_<method>.h5ad, <sample>_clustering.pdf, ..._summary.json
+│   ├── celltypes/   <sample>_predictions.csv | <sample>_celltypist_predictions.csv, PDFs, summaries
+│   └── spatial/     <sample>_morans_i.csv, <sample>_spatial.pdf, ..._summary.json
+└── nf-xen-report.html   # Quarto report: run info, parameters, per-sample results, figures
+```
+
+Nextflow's own run artifacts (`nextflow_report.html`, `timeline.html`, `dag.html`, `trace.txt`) are also written to `--outdir`.
+
+The QC'd `.h5ad` keeps raw counts in `layers['counts']` and stores CPM(1e4)+log1p in `X`, ready for downstream tools.
+
+## Gensheet: create sample sheets with ease
+
+A small Streamlit app in `gensheet/` helps build sample sheets interactively.
 
 ```bash
 cd gensheet
-pixi install
-pixi run streamlit run app.py
+pixi install && pixi run streamlit run app.py
 ```
 
-This will start a local web server where you can access the application in your browser. The application provides a user-friendly interface to input sample information and generate the sample sheet in CSV format.
-
-Or, you may simply run the Docker container:
-
-When using Docker, you need to mount the directory where you have the `h5ad` files as the exact path so that the application may return actual paths or it'll return paths relative to Docker, which won't work outside of the container. For example, if your `h5ad` files are in `/path/to/h5ad_files`, you can run the following command: 
+Or with Docker (mount your data at the same absolute path so the app can emit real paths):
 
 ```bash
 docker run --rm -v '/path/to/h5ad_files/':'/path/to/h5ad_files' -p 8501:8501 saditya88/nf-xen:gensheet
 ```
 
-Finally, if you prefer to use the `gensheet` application without Pixi, using system Python, you can run the following command:
-
-```bash
-cd gensheet
-python3 -m pip install streamlit-aggrid streamlit pandas # Or use a virtual environment like venv or conda, whichever you prefer/ have
-streamlit run app.py
-```
-
-Then, open your browser and navigate to `http://localhost:8501` to access the gensheet application.
-
-## Output
-
-Depending on the modules run, the pipeline can generate the following outputs:
-- QC reports for each sample
-- Clustering results
-- Cell type annotations in a `CSV` file
-- Processed `.h5ad` files with quality control and clustering information
-
 ## Programs used
 
 | Program | Purpose | Link |
 | ------- | ------- | ---- |
-| `Nextflow` | Workflow management | [Nextflow](https://www.nextflow.io/) |
-| `Scanpy` | Single-cell analysis | [Scanpy](https://scanpy.readthedocs.io/en/stable/) |
-| `Squidpy` | Single-cell spatial data processing | [Squidpy](https://squidpy.readthedocs.io/en/stable/) |
-| `Anndata` | Annotated data structure for single-cell data | [Anndata](https://anndata.readthedocs.io/en/latest/) |
-| `Celldex` | Cell type annotation | [Celldex](https://bioconductor.org/packages/release/data/experiment/html/celldex.html) |
-| `AnndataR` | R interface for AnnData | [AnndataR](https://github.com/scverse/anndataR?tab=readme-ov-file)
-| `SingleR` | Single-cell RNA-seq analysis | [SingleR](https://bioconductor.org/packages/release/bioc/html/SingleR.html) |
+| `Nextflow` | Workflow management | [nextflow.io](https://www.nextflow.io/) |
+| `nf-schema` | Parameter & sample-sheet validation | [nf-schema](https://github.com/nextflow-io/nf-schema) |
+| `Scanpy` | Single-cell analysis | [scanpy](https://scanpy.readthedocs.io/) |
+| `Squidpy` | Spatial transcriptomics analysis | [squidpy](https://squidpy.readthedocs.io/) |
+| `Anndata` | Annotated matrix container | [anndata](https://anndata.readthedocs.io/) |
+| `SingleR` + `celldex` | Reference-based cell type annotation | [SingleR](https://bioconductor.org/packages/release/bioc/html/SingleR.html), [celldex](https://bioconductor.org/packages/release/data/experiment/html/celldex.html) |
+| `CellTypist` | Model-based cell type annotation | [celltypist.org](https://www.celltypist.org/) |
+| `AnndataR` | AnnData ⇄ SingleCellExperiment bridge | [anndataR](https://github.com/scverse/anndataR) |
+| `Quarto` | HTML report rendering | [quarto.org](https://quarto.org/) |
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+Contributions are welcome — please fork and open a pull request.
 
 ## Acknowledgments
 
-- Built with [Nextflow](https://www.nextflow.io/)
-- This pipeline is a work in progress and may not cover all edge cases or be fully optimized for all environments. Testing and validation are ongoing.
+QC thresholds and filtering strategy follow Xenium best practice from Salmelin *et al.* 2025 (*Nature Methods*), "Optimizing Xenium In Situ data utility by quality assessment and best-practice analysis workflows", and 10x Xenium Onboard Analysis metrics. HPC profiles originally written by Pontus Freyhult (@pontus) and adapted by Aditya Singh (@addityea).
 
-For questions or issues, please open an issue in the repository.
-
+For questions or issues, open an issue in the repository.
