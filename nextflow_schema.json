@@ -25,7 +25,10 @@
             "description": "Max CPUs per task / local executor cap"
         },
         "memory": {
-            "type": "string",
+            "type": [
+                "string",
+                "integer"
+            ],
             "default": "20.GB",
             "description": "Default memory limit per task"
         },
