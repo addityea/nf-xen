@@ -6,7 +6,7 @@ process CLUSTERING {
         mode     : 'copy',
         overwrite: true
 
-    container params.container_python
+    container params.container_clustering
 
     input:
     tuple val(meta), path(h5ad)

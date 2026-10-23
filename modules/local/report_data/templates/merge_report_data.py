@@ -36,7 +36,7 @@ with open(params_file) as fh:
 # Attribute figures to samples by filename prefix
 figdir = "figures"
 for fname in sorted(os.listdir(figdir)):
-    if not fname.endswith(".pdf"):
+    if not fname.endswith((".pdf", ".png")):
         continue
     matched = None
     for sid in samples:
@@ -108,11 +108,19 @@ for s in samples.values():
     if not s["figures"]:
         lines += ["_No figures were produced for this sample._", ""]
     for f in s["figures"]:
+        if f.endswith(".png"):
+            media = [
+                f'  <img src="figures/{f}" alt="{f}" style="max-width:100%; height:auto;">',
+            ]
+        else:
+            media = [
+                f'  <object data="figures/{f}" type="application/pdf" width="100%" height="700px">',
+                f'    <a href="figures/{f}">Download {f}</a>',
+                f'  </object>',
+            ]
         lines += [
             f'<figure>',
-            f'  <object data="figures/{f}" type="application/pdf" width="100%" height="700px">',
-            f'    <a href="figures/{f}">Download {f}</a>',
-            f'  </object>',
+            *media,
             f'  <figcaption>{f}</figcaption>',
             f'</figure>',
             "",

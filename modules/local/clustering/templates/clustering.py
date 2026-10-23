@@ -13,7 +13,7 @@ import warnings
 
 import pandas as pd
 import scanpy as sc
-from pypdf import PdfWriter
+from PIL import Image
 
 import matplotlib
 matplotlib.use("Agg")
@@ -39,7 +39,7 @@ sc.tl.umap(adata)
 pdfs = []
 
 def save(fig, name):
-    fig.savefig(name, bbox_inches="tight")
+    fig.savefig(name, dpi=150, bbox_inches="tight")
     plt.close(fig)
     pdfs.append(name)
 
@@ -58,17 +58,17 @@ for res in RESOLUTIONS:
     summary.setdefault("n_clusters", {})[str(res)] = int(adata.obs[key].nunique())
 
     fig = sc.pl.umap(adata, color=key, title=f"{SAMPLE}: {METHOD} @ {res}", show=False, return_fig=True)
-    save(fig, f"umap_{key}.pdf")
+    save(fig, f"umap_{key}.png")
     if "spatial" in adata.obsm:
         fig = sc.pl.spatial(adata, color=key, spot_size=100, title=f"{SAMPLE}: {METHOD} @ {res}", show=False, return_fig=True)
-        save(fig, f"spatial_{key}.pdf")
+        save(fig, f"spatial_{key}.png")
 
 if len(keys) > 1:
     try:
         from pyclustree import clustree
         fig = clustree(adata, keys, title=f"{SAMPLE}: clustree", show_fraction=True)
         fig.set_size_inches(10, 12)
-        save(fig, "clustree.pdf")
+        save(fig, "clustree.png")
     except Exception as exc:  # noqa: BLE001 - clustree is optional
         print(f"WARNING: clustree failed ({exc}); skipping.")
 
@@ -76,11 +76,10 @@ if len(keys) > 1:
 default_key = keys[len(keys) // 2]
 adata.uns["nfxen_cluster_key"] = default_key
 
-writer = PdfWriter()
-for pdf in pdfs:
-    writer.append(pdf)
-writer.write(f"{SAMPLE}_clustering.pdf")
-writer.close()
+imgs = [Image.open(p).convert("RGB") for p in pdfs]
+if imgs:
+    imgs[0].save(f"{SAMPLE}_clustering.pdf", "PDF", resolution=150,
+                 save_all=True, append_images=imgs[1:])
 
 # anndata cannot write Arrow-backed string columns (pandas >= 3): normalise
 for _df in (adata.obs, adata.var):

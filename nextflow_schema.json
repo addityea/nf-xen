@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/addityea/nf-xen/main/nextflow_schema.json",
     "title": "nf-xen parameters",
-    "description": "nf-xen — end-to-end Xenium spatial transcriptomics analysis",
+    "description": "nf-xen \u2014 end-to-end Xenium spatial transcriptomics analysis",
     "type": "object",
     "properties": {
         "sampleSheet": {
@@ -23,6 +23,11 @@
             "type": "integer",
             "default": 14,
             "description": "Max CPUs per task / local executor cap"
+        },
+        "memory": {
+            "type": "string",
+            "default": "20.GB",
+            "description": "Default memory limit per task"
         },
         "time": {
             "type": "string",
@@ -47,7 +52,10 @@
         "clustering_method": {
             "type": "string",
             "default": "leiden",
-            "enum": ["leiden", "louvain"],
+            "enum": [
+                "leiden",
+                "louvain"
+            ],
             "description": "Graph clustering method (louvain is deprecated in scanpy)"
         },
         "clustering_resolutions": {
@@ -63,7 +71,11 @@
         "celltyping_method": {
             "type": "string",
             "default": "singler",
-            "enum": ["singler", "celltypist", "both"],
+            "enum": [
+                "singler",
+                "celltypist",
+                "both"
+            ],
             "description": "Cell type annotation backend(s)"
         },
         "celltypist_model": {
@@ -86,14 +98,39 @@
             "default": 20,
             "description": "Number of top Moran's I (spatially variable) genes to report/plot"
         },
-        "container_python": {
+        "container_qc": {
             "type": "string",
-            "default": "saditya88/nf-xen:python-1.0",
-            "description": "Image for Python (scanpy/squidpy/celltypist) processes"
+            "default": "saditya88/nf-xen-qc:1.0.0",
+            "description": "Image for the QC process"
+        },
+        "container_clustering": {
+            "type": "string",
+            "default": "saditya88/nf-xen-clustering:1.0.0",
+            "description": "Image for the clustering process"
+        },
+        "container_spatial": {
+            "type": "string",
+            "default": "saditya88/nf-xen-spatial:1.0.0",
+            "description": "Image for the spatial analysis process"
+        },
+        "container_celltypist": {
+            "type": "string",
+            "default": "saditya88/nf-xen-celltyping_celltypist:1.0.0",
+            "description": "Image for the CellTypist process"
+        },
+        "container_celldex": {
+            "type": "string",
+            "default": "saditya88/nf-xen-celldex_download:1.0.0",
+            "description": "Image for the celldex reference download"
+        },
+        "container_report": {
+            "type": "string",
+            "default": "saditya88/nf-xen-report_data:1.0.0",
+            "description": "Image for the report data merge"
         },
         "container_singler": {
             "type": "string",
-            "default": "docker.io/saditya88/singler:0.0.1",
+            "default": "saditya88/nf-xen-celltyping_singler:1.0.0",
             "description": "Image for the SingleR process"
         },
         "container_quarto": {

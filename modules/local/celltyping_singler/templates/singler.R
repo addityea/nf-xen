@@ -73,16 +73,19 @@ for (i in seq_along(ref_files)) {
     show_rownames = TRUE,
     show_colnames = FALSE
   )
-  ggsave(filename = paste0(prefix, "_", tag, "_heatmap.pdf"), plot = p, width = 10, height = 8)
+  ggsave(filename = paste0(prefix, "_", tag, "_heatmap.png"), plot = p, width = 10, height = 8, dpi = 200, bg = "white")
 
   p2 <- plotDeltaDistribution(predictions, ncol = 3) +
     ggtitle(paste0("SingleR delta: ", prefix, " [", tag, "]"))
-  ggsave(filename = paste0(prefix, "_", tag, "_distribution.pdf"), plot = p2, width = 14, height = 12)
+  ggsave(filename = paste0(prefix, "_", tag, "_distribution.png"), plot = p2, width = 14, height = 12, dpi = 200, bg = "white")
 
-  # Confidence summary for the report (before column renaming below)
+  # Confidence summary for the report (before column renaming below).
+  # SingleR >=1.9 exposes pr.best/pr.delta; older versions scores/delta.next.
+  delta_col <- if (!is.null(predictions\$pr.delta)) predictions\$pr.delta else predictions\$delta.next
+  n_lab     <- if (!is.null(predictions\$pr.best))  ncol(predictions\$pr.best)  else ncol(predictions\$scores)
   ref_entries <- c(ref_entries, sprintf(
     '    {"reference": "%s", "label": "%s", "n_labels": %d, "median_delta": %.4f}',
-    tag, reflabel, ncol(predictions\$scores), median(as.matrix(predictions\$delta.next))
+    tag, reflabel, n_lab, median(as.matrix(delta_col))
   ))
 
   colnames(predictions) <- paste0(colnames(predictions), "_", tag)

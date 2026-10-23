@@ -6,7 +6,7 @@ process QC {
         mode     : 'copy',
         overwrite: true
 
-    container params.container_python
+    container params.container_qc
 
     input:
     tuple val(meta), path(h5ad)

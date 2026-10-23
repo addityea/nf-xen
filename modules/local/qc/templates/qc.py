@@ -23,12 +23,11 @@ import glob
 import numpy as np
 import pandas as pd
 import scanpy as sc
-from pypdf import PdfWriter
+from PIL import Image
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
 import seaborn as sns
 
 sc.set_figure_params(dpi_save=150, facecolor="white", frameon=True, vector_friendly=True)
@@ -56,7 +55,7 @@ figures = []
 
 
 def fig_to_pdf(fig, name):
-    fig.savefig(name, bbox_inches="tight")
+    fig.savefig(name, dpi=150, bbox_inches="tight")
     plt.close(fig)
     figures.append(name)
 
@@ -135,10 +134,10 @@ def violin(col, fname):
     ax.set_title(f"{SAMPLE}: {col}")
     fig_to_pdf(fig, fname)
 
-violin("total_counts", "01_total_counts.pdf")
-violin("n_genes_by_counts", "02_n_genes.pdf")
-violin("cell_area", "03_cell_area.pdf")
-violin("area_ratio", "04_area_ratio.pdf")
+violin("total_counts", "01_total_counts.png")
+violin("n_genes_by_counts", "02_n_genes.png")
+violin("cell_area", "03_cell_area.png")
+violin("area_ratio", "04_area_ratio.png")
 
 if "control_fraction" in adata.obs.columns or "unassigned_codeword_fraction" in adata.obs.columns:
     cols = [c for c in ["control_fraction", "unassigned_codeword_fraction"] if c in adata.obs.columns]
@@ -148,7 +147,7 @@ if "control_fraction" in adata.obs.columns or "unassigned_codeword_fraction" in 
     for ax, c in zip(axes, cols):
         sns.histplot(adata.obs[c], bins=60, kde=True, ax=ax)
         ax.set_title(f"{SAMPLE}: {c}")
-    fig_to_pdf(fig, "05_controls.pdf")
+    fig_to_pdf(fig, "05_controls.png")
 
 # Top expressed genes — drawn manually (sc.pl.highest_expr_genes has
 # scanpy/seaborn kwarg-compat issues depending on versions).
@@ -160,13 +159,13 @@ ax.barh(range(len(_top))[::-1], _frac[_top])
 ax.set_yticks(range(len(_top))[::-1], list(adata.var_names[_top]))
 ax.set_xlabel("Fraction of total counts")
 ax.set_title(f"{SAMPLE}: top expressed genes")
-fig_to_pdf(fig, "06_highest_expr_genes.pdf")
+fig_to_pdf(fig, "06_highest_expr_genes.png")
 
 if has_spatial and has_area:
     fig, axarr = plt.subplots(1, 2, figsize=(16, 6))
     sc.pl.spatial(adata, color="cell_area", spot_size=100, title=f"{SAMPLE}: cell area", ax=axarr[0], show=False)
     sc.pl.spatial(adata, color="area_ratio", spot_size=100, title=f"{SAMPLE}: nucleus/cell area ratio", ax=axarr[1], show=False)
-    fig_to_pdf(fig, "07_spatial_areas.pdf")
+    fig_to_pdf(fig, "07_spatial_areas.png")
 
 # ------------------------------------------------------------------ filtering
 mask = np.ones(adata.n_obs, dtype=bool)
@@ -215,7 +214,7 @@ if has_spatial:
         adata, color="filtered_out", spot_size=100, palette=["lightgray", "red"],
         title=f"{SAMPLE}: filtered out (red)", show=False, return_fig=True,
     )
-    fig_to_pdf(fig, "08_filtered_spatial.pdf")
+    fig_to_pdf(fig, "08_filtered_spatial.png")
 
 adata = adata[mask].copy()
 adata.obs["filtered_out"] = False
@@ -227,7 +226,7 @@ if not off(F["min_cells_per_gene"]):
 summary["n_genes_after_filter"] = int(adata.n_vars)
 
 # Post-filter distributions
-for col, fname in [("total_counts", "09_post_filter_counts.pdf"), ("n_genes_by_counts", "10_post_filter_genes.pdf")]:
+for col, fname in [("total_counts", "09_post_filter_counts.png"), ("n_genes_by_counts", "10_post_filter_genes.png")]:
     violin(col, fname)
 
 # ------------------------------------------------------------------ normalize
@@ -243,17 +242,16 @@ if REG_COL in adata.obs.columns and adata.obs[REG_COL].nunique() > 1:
         sns.boxplot(x=adata.obs[REG_COL], y=adata.obs[feat], ax=ax)
         ax.set_title(f"{SAMPLE}: {feat} by {REG_COL}")
         ax.tick_params(axis="x", rotation=45)
-    fig_to_pdf(fig, "11_region_qc.pdf")
+    fig_to_pdf(fig, "11_region_qc.png")
 else:
     if REG_COL != "all_regions":
         print(f"WARNING: region column '{REG_COL}' not found in obs; skipping region QC plots.")
 
 # ------------------------------------------------------------------ outputs
-writer = PdfWriter()
-for pdf in sorted(figures):
-    writer.append(pdf)
-writer.write(f"{SAMPLE}_qc.pdf")
-writer.close()
+imgs = [Image.open(p).convert("RGB") for p in sorted(figures)]
+if imgs:
+    imgs[0].save(f"{SAMPLE}_qc.pdf", "PDF", resolution=150,
+                  save_all=True, append_images=imgs[1:])
 
 # anndata cannot write Arrow-backed string columns (pandas >= 3): normalise
 for _df in (adata.obs, adata.var):

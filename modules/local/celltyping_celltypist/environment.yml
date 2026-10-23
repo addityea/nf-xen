@@ -1,0 +1,14 @@
+name: nf-xen-celltypist
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas >=2.2,<3
+  - scipy
+  - anndata
+  - scanpy
+  - celltypist
+  - matplotlib
+  - pillow

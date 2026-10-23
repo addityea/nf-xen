@@ -1,7 +1,7 @@
 process REPORT_DATA {
     label 'process_single'
 
-    container params.container_python
+    container params.container_report
 
     input:
     path(figures)

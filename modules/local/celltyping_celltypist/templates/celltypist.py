@@ -21,7 +21,33 @@ from celltypist import models
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
+from PIL import Image
+import itertools
+
+pdfs = []
+
+_pages = itertools.count()
+
+class _PngPages:
+    """Collect figures as PNG pages, merge into one compact PDF at close."""
+    def __init__(self, out):
+        self.out = out
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        imgs = [Image.open(p).convert("RGB") for p in sorted(pdfs)]
+        if imgs:
+            imgs[0].save(self.out, "PDF", resolution=150,
+                         save_all=True, append_images=imgs[1:])
+        return False
+
+    def savefig(self, fig):
+        name = f"fig_{next(_pages):02d}.png"
+        fig.savefig(name, dpi=150, bbox_inches="tight")
+        pdfs.append(name)
+
 
 SAMPLE = "${meta.sample}"
 MODELS = [m.strip() for m in "${meta.celltypist_model}".split("--") if m.strip()]
@@ -73,7 +99,7 @@ LABEL_COL = _pick("majority_voting", exclude=("conf",)) or _pick("predicted_labe
 CONF_COL = _pick("conf_majority_voting") or _pick("conf_score")
 
 # ---- figures
-with PdfPages(f"{SAMPLE}_celltypist.pdf") as pdf:
+with _PngPages(f"{SAMPLE}_celltypist.pdf") as pdf:
     vc = out.obs[LABEL_COL].value_counts()
     fig, ax = plt.subplots(figsize=(max(8, 0.4 * len(vc)), 6))
     vc.plot.barh(ax=ax)

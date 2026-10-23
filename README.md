@@ -48,7 +48,9 @@ Each sample declares its own `steps` (`qc`, `clustering`, `celltyping`, `spatial
 ## Requirements
 
 - [Nextflow](https://www.nextflow.io/) ≥ 25.10 (Java 17+)
-- [Docker](https://www.docker.com/) / [Apptainer](https://apptainer.org/) / [Singularity](https://sylabs.io/) (recommended)
+- [Docker](https://www.docker.com/) / [Apptainer](https://apptainer.org/) / [Singularity](https://sylabs.io/) (recommended), or [conda/mamba](https://github.com/conda-forge/miniforge) for the `conda` profile
+
+Each analysis process ships its own small multi-arch container (`saditya88/nf-xen-<module>`, built from the module's `environment.yml` with `docker/build_all.sh`) instead of one large image. The same `environment.yml` files drive the `conda` profile.
 
 ## Quick start
 
@@ -134,9 +136,16 @@ Global parameters (validated against `nextflow_schema.json`, see `nextflow run m
 | `--celltypist_majority_voting` | `true` | CellTypist majority voting. |
 | `--spatial_knn` | `6` | Spatial KNN graph for squidpy. |
 | `--spatial_top_svg` | `20` | Top spatially variable genes (Moran's I). |
-| `--container_python` | `saditya88/nf-xen:python-1.0` | scanpy/squidpy/celltypist image (build with `docker build -t saditya88/nf-xen:python-1.0 docker/`, or use your own). |
-| `--container_singler` | `saditya88/singler:0.0.1` | R/SingleR/celldex image. |
+| `--container_qc` | `saditya88/nf-xen-qc:1.0.0` | QC image (scanpy/seaborn). |
+| `--container_clustering` | `saditya88/nf-xen-clustering:1.0.0` | Clustering image (scanpy/leidenalg/umap). |
+| `--container_spatial` | `saditya88/nf-xen-spatial:1.0.0` | Spatial image (squidpy). |
+| `--container_celltypist` | `saditya88/nf-xen-celltyping_celltypist:1.0.0` | CellTypist image. |
+| `--container_singler` | `saditya88/nf-xen-celltyping_singler:1.0.0` | R/SingleR/celldex image. |
+| `--container_celldex` | `saditya88/nf-xen-celldex_download:1.0.0` | R/celldex reference download image. |
+| `--container_report` | `saditya88/nf-xen-report_data:1.0.0` | Report data merge (stdlib-only Python). |
 | `--container_quarto` | `ghcr.io/quarto-dev/quarto:latest` | Quarto image for the report. |
+
+All `saditya88/nf-xen-*` images are multi-arch (amd64/arm64) and built from each module's `environment.yml` via `docker/build_all.sh`.
 
 ## Profiles
 
@@ -144,8 +153,9 @@ Global parameters (validated against `nextflow_schema.json`, see `nextflow run m
 | ------- | ------- |
 | `test` | Toy smoke test: bundled synthetic dataset, whole flow, no downloads. |
 | `test_full` | Small public dataset (10x Xenium human pancreas, 111 MB) with every step enabled. |
-| `docker` / `arm` | Docker (arm adds `--platform linux/amd64` for Apple Silicon). |
-| `apptainer` | Apptainer/Singularity with Wave `oras://` images. |
+| `docker` / `arm` | Docker. Images are multi-arch (amd64 + arm64) — no platform flags needed. |
+| `conda` | No containers: each process runs in its own conda environment built from the module's `environment.yml` (needs conda/mamba on PATH; the Quarto report still uses its container). |
+| `apptainer` | Apptainer/Singularity. |
 | `offline` | Pre-pulled Apptainer images in `conts/` (see below). |
 | `pdc_kth` | PDC Dardel (KTH) SLURM cluster. |
 | `uppmax` | UPPMAX (miarka/pelle/snowy/rackham) SLURM cluster. |

@@ -19,7 +19,31 @@ import squidpy as sq
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
+from PIL import Image
+import itertools
+
+_pages = itertools.count()
+
+class _PngPages:
+    """Collect figures as PNG pages, merge into one compact PDF at close."""
+    def __init__(self, out):
+        self.out = out
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        imgs = [Image.open(p).convert("RGB") for p in sorted(pdfs)]
+        if imgs:
+            imgs[0].save(self.out, "PDF", resolution=150,
+                         save_all=True, append_images=imgs[1:])
+        return False
+
+    def savefig(self, fig):
+        name = f"fig_{next(_pages):02d}.png"
+        fig.savefig(name, dpi=150, bbox_inches="tight")
+        pdfs.append(name)
+
 
 SAMPLE = "${meta.sample}"
 KNN = int("${spatial_knn}")
@@ -45,7 +69,7 @@ if cluster_key is not None and adata.obs[cluster_key].nunique() < 2:
     print(f"WARNING: cluster key '{cluster_key}' has <2 categories; skipping enrichment plots.")
     cluster_key = None
 
-with PdfPages(f"{SAMPLE}_spatial.pdf") as pdf:
+with _PngPages(f"{SAMPLE}_spatial.pdf") as pdf:
     # ------------------------------------------------ neighbourhood enrichment
     if cluster_key:
         summary["cluster_key"] = str(cluster_key)
