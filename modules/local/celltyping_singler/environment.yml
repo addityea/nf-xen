@@ -1,0 +1,15 @@
+name: nf-xen-singler
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base=4.5
+  - r-ggplot2
+  - r-viridis
+  - r-pheatmap
+  - r-ggbeeswarm
+  - r-yaml
+  - bioconductor-anndatar
+  - bioconductor-singler
+  - bioconductor-singlecellexperiment
+  - bioconductor-hdf5array

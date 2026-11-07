@@ -1,0 +1,2 @@
+sample,input,steps,region_col,min_counts,max_counts,min_genes,max_genes,min_cell_area,max_cell_area,min_area_ratio,max_area_ratio,max_nucleus_area,min_cells_per_gene,max_control_fraction,exclude_doublets,clustering_resolutions,celldex_ref,celldex_labels,celltypist_model
+toy,tests/toy_xenium.h5ad,"qc,clustering,spatial",,5,-1,3,-1,10,-1,-1,-1,-1,2,-1,false,0.6,,,

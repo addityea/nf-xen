@@ -1,0 +1,117 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "samplesheet",
+    "title": "nf-xen sample sheet",
+    "description": "Sample sheet for nf-xen. Column order below is the order in which values are returned by samplesheetToList — keep main.nf in sync.",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "sample": {
+                "type": "string",
+                "meta": ["sample"],
+                "pattern": "^\\w+$",
+                "errorMessage": "Sample name must contain only word characters (letters, digits, underscore)"
+            },
+            "input": {
+                "type": "string",
+                "pattern": "\\.h5ad$",
+                "errorMessage": "input must be a path to an .h5ad file"
+            },
+            "steps": {
+                "type": "string",
+                "default": "qc",
+                "pattern": "^(qc|clustering|celltyping|spatial)(\\s*,\\s*(qc|clustering|celltyping|spatial))*$",
+                "errorMessage": "steps must be a comma-separated list drawn from: qc, clustering, celltyping, spatial"
+            },
+            "region_col": {
+                "type": "string",
+                "default": "all_regions",
+                "description": "obs column with region annotations used for region-stratified QC plots"
+            },
+            "min_counts": {
+                "type": "number",
+                "default": -1,
+                "description": "Min transcript counts per cell. -1 disables the filter"
+            },
+            "max_counts": {
+                "type": "number",
+                "default": -1,
+                "description": "Max transcript counts per cell. -1 disables the filter"
+            },
+            "min_genes": {
+                "type": "number",
+                "default": -1,
+                "description": "Min genes per cell. -1 disables the filter"
+            },
+            "max_genes": {
+                "type": "number",
+                "default": -1,
+                "description": "Max genes per cell. -1 disables the filter"
+            },
+            "min_cell_area": {
+                "type": "number",
+                "default": -1,
+                "description": "Min cell area (um^2). -1 disables the filter"
+            },
+            "max_cell_area": {
+                "type": "number",
+                "default": -1,
+                "description": "Max cell area (um^2). -1 disables the filter"
+            },
+            "min_area_ratio": {
+                "type": "number",
+                "default": -1,
+                "description": "Min nucleus/cell area ratio. -1 disables the filter"
+            },
+            "max_area_ratio": {
+                "type": "number",
+                "default": -1,
+                "description": "Max nucleus/cell area ratio. -1 disables the filter"
+            },
+            "max_nucleus_area": {
+                "type": "number",
+                "default": -1,
+                "description": "Max nucleus area (um^2). -1 disables the filter"
+            },
+            "min_cells_per_gene": {
+                "type": "number",
+                "default": -1,
+                "description": "Min cells expressing a gene. -1 disables the filter"
+            },
+            "max_control_fraction": {
+                "type": "number",
+                "default": -1,
+                "description": "Max fraction of control probes + control codewords per cell (0-1). -1 disables the filter"
+            },
+            "exclude_doublets": {
+              "type": "boolean",
+              "default": false,
+              "description": "Remove cells flagged by Xenium 'is_doublet'."
+            },
+            "clustering_resolutions": {
+                "anyOf": [
+                    { "type": "string", "pattern": "^$|^[0-9.]+(,[0-9.]+)*$" },
+                    { "type": "number" }
+                ],
+                "errorMessage": "clustering_resolutions must be empty or a comma-separated list of numbers"
+            },
+            "celldex_ref": {
+                "type": "string",
+                "default": "",
+                "description": "celldex reference(s) for SingleR: '<name>__<version>' (auto-downloaded) or path to a local HDF5SummarizedExperiment .tar.gz. Multiple refs joined with '--'"
+            },
+            "celldex_labels": {
+                "type": "string",
+                "default": "",
+                "description": "colData label column(s) for the reference(s), joined with '--' (e.g. 'label.main--label.fine')"
+            },
+            "celltypist_model": {
+                "type": "string",
+                "default": "",
+                "description": "CellTypist model name(s) (e.g. 'Immune_All_Low.pkl') or path(s) to local .pkl model(s), joined with '--'. Empty uses the global --celltypist_model"
+            }
+        },
+        "required": ["sample", "input", "steps"]
+    }
+}

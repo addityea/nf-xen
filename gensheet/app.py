@@ -1,4 +1,5 @@
 import os
+import re
 import pandas as pd
 import streamlit as st
 from datetime import datetime
@@ -12,7 +13,8 @@ st.set_page_config(
 
 # Default values
 DEFAULTS = {
-    'region': 'all_regions',
+    'steps': 'qc,clustering,celltyping,spatial',
+    'region_col': 'all_regions',
     'min_counts': 10,
     'max_counts': 500,
     'min_genes': 5,
@@ -23,11 +25,12 @@ DEFAULTS = {
     'max_area_ratio': 0.9,
     'max_nucleus_area': 110,
     'min_cells_per_gene': 5,
-    'qc': 'YES',
-    'clust': 'YES',
-    'clust_res': 'NA',
-    'celldex_ref': 'hpca__2024-02-26',
-    'celldex_labs': 'label.main'
+    'max_control_fraction': -1,
+    'exclude_doublets': 'false',
+    'clustering_resolutions': '',
+    'celldex_ref': 'monaco_immune__2024-02-26',
+    'celldex_labels': 'label.main',
+    'celltypist_model': ''
 }
 
 st.title("nf-xen sample sheet generator")
@@ -43,9 +46,10 @@ if uploaded_files:
     for file in uploaded_files:
         full_path = os.path.abspath(file.name)
         sample_name = os.path.splitext(os.path.basename(file.name))[0]
+        sample_name = re.sub(r'\W', '_', sample_name)  # schema requires ^\w+$
         entry = {
-            'sampleName': sample_name,
-            'h5ad': full_path
+            'sample': sample_name,
+            'input': full_path
         }
         entry.update(DEFAULTS)
         data.append(entry)
@@ -63,14 +67,14 @@ if uploaded_files:
                     return shortest[:i][::-1]
         return shortest[::-1]
 
-    if len(df['sampleName']) > 1:
-        suffix = longest_common_suffix(df['sampleName'].tolist())
+    if len(df['sample']) > 1:
+        suffix = longest_common_suffix(df['sample'].tolist())
         if suffix:
-            df['sampleName'] = df['sampleName'].str[:-len(suffix)]
+            df['sample'] = df['sample'].str[:-len(suffix)]
 
     st.write("### Edit Sample Sheet Below:")
-    st.write("You can edit the values below. The columns `qc` and `clust` are dropdowns with options `YES` and `NO`")
-    st.write("The `h5ad` column is the path to the uploaded file. You can edit it if needed, but it should point to the correct file path.")
+    st.write("You can edit the values below. The `steps` column is a comma-separated list of `qc`, `clustering`, `celltyping`, `spatial`. Set a numeric filter to `-1` to disable it.")
+    st.write("The `input` column is the path to the uploaded file. You can edit it if needed, but it should point to the correct file path.")
     st.write("The sample names are derived from the uploaded file names, and you can edit them as needed.")
     st.write("The longest common suffix has been removed from the sample names to make them more readable.")
     st.write("Don't forget to scroll horizontally to see all columns as they may not be visible.")
@@ -81,8 +85,9 @@ if uploaded_files:
     edited_df = st.data_editor(
         df,
         column_config={
-            "qc": st.column_config.SelectboxColumn("QC", options=["YES", "NO"], default="YES", required=True),
-            "clust": st.column_config.SelectboxColumn("Clust", options=["YES", "NO"], default="YES", required=True)
+            "steps": st.column_config.TextColumn("Steps", help="Comma-separated: qc, clustering, celltyping, spatial", required=True),
+            "exclude_doublets": st.column_config.SelectboxColumn("Doublets", options=["true", "false"], default="false"),
+            "max_control_fraction": st.column_config.NumberColumn("Max ctrl frac", help="-1 disables"),
         },
         hide_index=True
     )
@@ -102,7 +107,7 @@ if uploaded_files:
     st.sidebar.header("Workflow Parameters")
 
     # Profile Selection
-    available_profiles = ["local", "docker", "arm", "apptainer", "conda", "uppmax", "test_full", "offline"]
+    available_profiles = ["local", "docker", "arm", "apptainer", "uppmax", "pdc_kth", "test", "offline"]
     selected_profiles = st.sidebar.multiselect("Select Profiles", available_profiles, default=["docker"])
 
     # Optional Params Inputs
@@ -132,7 +137,8 @@ if uploaded_files:
 
     # Clustering Method Dropdown (Louvain or Leiden)
     clust_method = st.sidebar.selectbox("Clustering Method", ["leiden", "louvain"], index=0)
-    clust_res = st.sidebar.text_input("Clustering Resolution(s)", value="0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5")
+    clust_res = st.sidebar.text_input("Clustering Resolution(s)", value="0.5,0.8,1.0,1.2")
+    celltyping_method = st.sidebar.selectbox("Celltyping Method", ["singler", "celltypist", "both"], index=0)
 
     # Output Directory
     outdir = st.sidebar.text_input("Output Directory", value="results")
@@ -147,7 +153,7 @@ if uploaded_files:
     st.write("### Generated Nextflow Run Command")
     st.write("Make sure to run this command from within the `nf-xen` directory.")
     st.write("Update the `--sampleSheet` parameter if it's not in the nf-xen directory.")
-    nextflow_cmd = f"nextflow run main.nf -profile {profile_param} --sampleSheet {sample_sheet_path} --outdir {outdir} --cpus {cpus} --memory {memory} --retry {retry} --time {time_param} --clust_method {clust_method} --clust_res \"{clust_res}\""
+    nextflow_cmd = f"nextflow run main.nf -profile {profile_param} --sampleSheet {sample_sheet_path} --outdir {outdir} --cpus {cpus} --memory {memory} --retry {retry} --time {time_param} --clustering_method {clust_method} --clustering_resolutions \"{clust_res}\" --celltyping_method {celltyping_method}"
     if account:
         nextflow_cmd += f" --account {account}"
 

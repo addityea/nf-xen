@@ -1,0 +1,5 @@
+name: nf-xen-report-data
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11

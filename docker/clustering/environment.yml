@@ -1,0 +1,16 @@
+name: nf-xen-clustering
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas >=2.2,<3
+  - scipy
+  - anndata
+  - scanpy
+  - leidenalg
+  - igraph
+  - umap-learn
+  - matplotlib
+  - pillow
